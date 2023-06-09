@@ -1,0 +1,10 @@
+[
+    "landMaxSpeed": 30,
+    "landAcceleration": 30,
+    "landDeceleration": 20,
+    "airCorrectionAcceleration": 10,
+    "jumpVelocity": 40,
+    "jumpStopTime": 40,
+    "gravity": 10,
+    "hitbox": { "x": 8, "y": 13, "width": 16, "height": 19 }
+]

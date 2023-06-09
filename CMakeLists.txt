@@ -23,6 +23,8 @@ add_executable(${APP_NAME}
     Player.cpp
     Animation.h
     Animation.cpp
+    Level.h
+    Level.cpp
     Utilities.h
     Utilities.cpp
 
@@ -51,4 +53,4 @@ find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 
-set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/../Runtime)
+set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Runtime)

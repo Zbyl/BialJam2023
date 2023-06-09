@@ -23,11 +23,21 @@ public:
     float animTime = 0.0f; ///< Time for current animation.
     Animation runAnimation;
 
+    float landMaxSpeed;
+    float landAcceleration;
+    float landDeceleration;
+    float airCorrectionAcceleration;
+    float jumpVelocity;
+    float jumpStopTime;
+    float gravity;
+    raylib::Rectangle hitbox;
+
 public:
     Player(Game& game) : game(game) {
         runAnimation.load("Graphics/Player/player-run.json");
     }
 
     void update();
+    void load();
 };
 

@@ -1,0 +1,17 @@
+{
+    "tileSize": 16,
+    "ldtkMap": "Map0/simplified/Level_0",
+    "music": "../Music/platformer_level03.mp3",
+    "backgrounds": [ "Map0/simplified/Level_0/_bg.png", "Map0/simplified/Level_0/IntGrid.png" ],
+    "foregrounds": [],
+    "paralaxLayers": [
+        {
+            "image": "../Graphics/Backgrounds/back.png",
+            "scale": { "x":  0.1, "y":  0.1 }
+        },
+        {
+            "image": "../Graphics/Backgrounds/middle.png",
+            "scale": { "x":  0.3, "y":  0.3 }
+        }
+    ]
+}

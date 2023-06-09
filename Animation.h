@@ -3,6 +3,7 @@
 #include "raylib-cpp.hpp"
 
 #include <tuple>
+#include <vector>
 
 
 class Animation {

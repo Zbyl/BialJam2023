@@ -2,6 +2,7 @@
 
 #include "Menu.h"
 #include "Player.h"
+#include "Level.h"
 
 #include "raylib-cpp.hpp"
 
@@ -24,6 +25,7 @@ public:
 
     raylib::Vector2 cameraPosition = { 0, 0 }; ///< Camera position in world coordinates.
     Player player;
+    Level level;
 
 public:
     Game()
@@ -31,8 +33,10 @@ public:
         , sfx("Sounds/663831__efindlay__springy-jump.wav")
         , menu(*this)
         , player(*this)
+        , level(*this)
     {
         SetTargetFPS(60); // Set our game to run at 60 frames-per-second
+        level.load("Levels/Level0.json");
     }
 
     void mainLoop();

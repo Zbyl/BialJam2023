@@ -3,6 +3,8 @@
 
 #include "Utilities.h"
 
+#include "zerrors.h"
+
 #include "nlohmann/json.hpp"
 
 #include <filesystem>
@@ -10,6 +12,7 @@
 
 
 std::tuple< raylib::Vector2, raylib::Texture2D& > Animation::spriteForTime(float animationTime) {
+    ZASSERT(animationLength > 0.0f);
     while (animationTime >= animationLength)
         animationTime -= animationLength;
     float time = 0.0f;
@@ -42,5 +45,5 @@ void Animation::load(const std::string& animFile) {
         delays.push_back(delay);
     }
 
-    animationLength = std::accumulate(delays.begin(), delays.end(), 0);
+    animationLength = std::accumulate(delays.begin(), delays.end(), 0.0f);
 }
