@@ -8,6 +8,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include <cmath>
+
 
 void Player::update() {
     animTime += game.levelTimeDelta;
@@ -35,15 +37,24 @@ void Player::update() {
         axisY += 1;
     }
 
+    if (game.gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+        if (jumpButtonBlocked) {
+            DrawText("JUMP BLOCKED", 10, 60, 10, BLACK);
+        } else {
+            DrawText("JUMP HELD", 10, 60, 10, BLACK);
+            buttonJump = true;
+            jumpButtonLastPressTime = game.levelTime;
+        }
+    } else {
+        jumpButtonBlocked = false;
+    }
+
     if (game.levelTime <= jumpButtonLastPressTime + jumpButtonActiveTime) {
         DrawText("JUMP HELD ARTIFICIALLY", 10, 50, 10, BLACK);
         buttonJump = true;
     }
-
-    if (game.gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
-        DrawText("JUMP HELD", 10, 60, 10, BLACK);
-        buttonJump = true;
-        jumpButtonLastPressTime = game.levelTime;
+    else {
+        if (!jumpButtonBlocked) jumpButtonOwned = false;
     }
 
     // Check collisions and push back.
@@ -81,7 +92,7 @@ void Player::update() {
             grabDirection = touchingWallDirection;
             facingDirection = -touchingWallDirection;
         }
-        if (touchingWall && buttonJump) {
+        if (touchingWall && buttonJump && !jumpButtonOwned) {
             state = PlayerState::WALL_KICK;
             wallKickDirection = -touchingWallDirection;
             facingDirection = -touchingWallDirection;
@@ -100,12 +111,14 @@ void Player::update() {
         if (oldState != state) {
             jumpSfx.Play();
             jumpStartTime = game.levelTime;
+            jumpButtonOwned = true;
         }
         if (buttonJump && (game.levelTime <= jumpStartTime + jumpAccelerationTime)) {
             auto jumpTime = game.levelTime - jumpStartTime;
             velocity.y = -jumpVelocity;
             velocity.y += jumpSustainGravity * jumpTime * jumpTime;
         } else {
+            jumpButtonBlocked = true;
             state = PlayerState::FALLING;
             if (buttonGlide) {
                 state = PlayerState::GLIDING;
@@ -113,14 +126,38 @@ void Player::update() {
         }
     }
 
-    if ((state == PlayerState::JUMPING) || (state == PlayerState::FALLING) || (state == PlayerState::GLIDING)) {
+    bool startedWallKick = false;
+
+    if (state == PlayerState::WALL_KICK) {
+        if (oldState != state) {
+            jumpSfx.Play();
+            jumpStartTime = game.levelTime;
+            jumpButtonOwned = true;
+        }
+        if (buttonJump && (game.levelTime <= jumpStartTime + wallKickAccelerationTime)) {
+            auto jumpTime = game.levelTime - jumpStartTime;
+            velocity.y = -wallKickVelocity.y;
+            velocity.y += wallKickSustainGravity.y * jumpTime * jumpTime;
+            velocity.x = wallKickVelocity.x * wallKickDirection;
+            velocity.x += wallKickSustainGravity.x * wallKickDirection * jumpTime * jumpTime;
+        }
+        else {
+            jumpButtonBlocked = true;
+            state = PlayerState::FALLING;
+            if (buttonGlide) {
+                state = PlayerState::GLIDING;
+            }
+        }
+    }
+
+    if ((state == PlayerState::JUMPING) || (state == PlayerState::FALLING) || (state == PlayerState::GLIDING) || ((state == PlayerState::WALL_KICK) && !startedWallKick)) {
         if (touchingWall && buttonGrab) {
             state = PlayerState::GRABBING;
             facingDirection = -touchingWallDirection;
         }
     }
 
-    if ((state == PlayerState::JUMPING) || (state == PlayerState::WALL_KICK) || (state == PlayerState::FALLING)) {
+    if ((state == PlayerState::JUMPING) || (state == PlayerState::FALLING)) {
         velocity.x += axisX * airCorrectionAcceleration * game.levelTimeDelta;
         if (axisX != 0) {
             facingDirection = axisX;
@@ -129,7 +166,10 @@ void Player::update() {
     else
     if (state == PlayerState::GROUNDED) {
         if (axisX != 0) {
-            velocity.x += axisX * landAcceleration * game.levelTimeDelta;
+            if (std::signbit(static_cast<float>(axisX)) == std::signbit(velocity.x))
+                velocity.x += axisX * landAcceleration * game.levelTimeDelta;
+            else
+                velocity.x += axisX * landHardDeceleration * game.levelTimeDelta;
             facingDirection = axisX;
         }
         else
@@ -147,15 +187,19 @@ void Player::update() {
         velocity.y += glidingGravity;
     }
 
+    if (velocity.x > 0) velocity.x = std::min(velocity.x, landMaxSpeed);
+    if (velocity.x < 0) velocity.x = std::max(velocity.x, -landMaxSpeed);
     position += velocity * game.levelTimeDelta;
 
     auto [origin, image] = runAnimation.spriteForTime(animTime);
-    auto screenPosition = game.worldToScreen(position - raylib::Vector2(origin.x * facingDirection, origin.y));
-    image.Draw(screenPosition, 0.0f, static_cast<float>(facingDirection));
+    game.drawSprite(position, image, origin, facingDirection == -1);
+
     DrawText((ZSTR() << "PLAYER STATE: " << to_string(state)).str().c_str(), 10, 10, 10, BLACK);
     DrawText((ZSTR() << "POS X: " << position.x << " Y: " << position.y).str().c_str(), 10, 20, 10, BLACK);
     DrawText((ZSTR() << "VEL X: " << velocity.x << " Y: " << velocity.y).str().c_str(), 10, 30, 10, BLACK);
     DrawText((ZSTR() << "FACING: " << facingDirection << " GRAB: " << grabDirection << " KICK: " << wallKickDirection).str().c_str(), 10, 40, 10, BLACK);
+    if (jumpButtonOwned)
+        DrawText("JUMP OWNED", 10, 70, 10, BLACK);
 }
 
 void Player::load() {
@@ -169,6 +213,7 @@ void Player::load() {
     landMaxSpeed = json["landMaxSpeed"].get<float>();
     landAcceleration = json["landAcceleration"].get<float>();
     landDeceleration = json["landDeceleration"].get<float>();
+    landHardDeceleration = json["landHardDeceleration"].get<float>();
     airCorrectionAcceleration = json["airCorrectionAcceleration"].get<float>();
 
     jumpVelocity = json["jumpVelocity"].get<float>();
@@ -179,6 +224,7 @@ void Player::load() {
     gravity = json["gravity"].get<float>();
     glidingGravity = json["glidingGravity"].get<float>();
     jumpSustainGravity = json["jumpSustainGravity"].get<float>();
+    wallKickSustainGravity = raylib::Vector2{ json["wallKickSustainGravity"]["x"].get<float>(), json["wallKickSustainGravity"]["y"].get<float>() };
     jumpButtonActiveTime = json["jumpButtonActiveTime"].get<float>();
     hitbox = raylib::Rectangle{ json["hitbox"]["x"].get<float>(), json["hitbox"]["y"].get<float>(), json["hitbox"]["width"].get<float>(), json["hitbox"]["height"].get<float>() };
 }

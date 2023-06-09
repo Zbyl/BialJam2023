@@ -38,6 +38,8 @@ public:
 
     void mainLoop();
 
-    raylib::Vector2 worldToScreen(raylib::Vector2 worldPosition);
-    raylib::Vector2 screenToWorld(raylib::Vector2 screenPosition);
+    raylib::Vector2 worldToScreen(raylib::Vector2 worldPosition) const;
+    raylib::Vector2 screenToWorld(raylib::Vector2 screenPosition) const;
+
+    void drawSprite(raylib::Vector2 worldPosition, const raylib::Texture2D& sprite, raylib::Vector2 spriteOrigin, bool horizontalMirror) const;
 };

@@ -1,12 +1,12 @@
 #include "game.h"
 
 
-raylib::Vector2 Game::worldToScreen(raylib::Vector2 worldPosition) {
+raylib::Vector2 Game::worldToScreen(raylib::Vector2 worldPosition) const {
     auto delta = worldPosition - cameraPosition;
     return { delta.x + screenWidth / 2, delta.y + screenHeight / 2 };
 }
 
-raylib::Vector2 Game::screenToWorld(raylib::Vector2 screenPosition) {
+raylib::Vector2 Game::screenToWorld(raylib::Vector2 screenPosition) const {
     return { screenPosition.x - screenWidth / 2 + cameraPosition.x, (screenPosition.y - screenHeight / 2) + cameraPosition.y };
 }
 
@@ -48,6 +48,17 @@ void Game::mainLoop()
     }
 }
 
+void Game::drawSprite(raylib::Vector2 worldPosition, const raylib::Texture2D& sprite, raylib::Vector2 spriteOrigin, bool horizontalMirror) const {
+    raylib::Vector2 screenPosition;
+    if (!horizontalMirror) {
+        screenPosition = worldToScreen(worldPosition - spriteOrigin);
+        sprite.Draw(screenPosition);
+    }
+    else {
+        screenPosition = worldToScreen(worldPosition - raylib::Vector2(sprite.GetSize().x - spriteOrigin.x, spriteOrigin.y));
+        sprite.Draw(raylib::Rectangle { raylib::Vector2::Zero(), raylib::Vector2{-1.0f, 1.0f} * sprite.GetSize() }, raylib::Rectangle { screenPosition, sprite.GetSize() });
+    }
+}
 
 void gamepadTest()
 {

@@ -1,17 +1,19 @@
 {
-    "landMaxSpeed": 30,
-    "landAcceleration": 300,
-    "landDeceleration": 200,
-    "airCorrectionAcceleration": 10,
+    "landMaxSpeed": 400,
+    "landAcceleration": 600,
+    "landDeceleration": 500,
+    "landHardDeceleration": 600,
+    "airCorrectionAcceleration": 200,
 
     "jumpVelocity": 350,
     "jumpAccelerationTime": 0.3,
-    "wallKickVelocity": { "x": 20, "y": 40 },
-    "wallKickAccelerationTime": 0.7,
+    "wallKickVelocity": { "x": 300, "y": 300 },
+    "wallKickAccelerationTime": 0.3,
 
     "gravity": 50,
     "glidingGravity": 25,
     "jumpSustainGravity": 25,
+    "wallKickSustainGravity": { "x": 25, "y": 25 },
     "jumpButtonActiveTime": 0.03,
     "hitbox": { "x": 8, "y": 13, "width": 16, "height": 19 }
 }
