@@ -1,0 +1,32 @@
+[
+    {
+        "image": "player-run-1.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-run-2.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-run-3.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-run-4.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-run-5.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-run-6.png",
+        "origin": { "x":  0, "y":  0 },
+        "delay": 0.1
+    }
+]
