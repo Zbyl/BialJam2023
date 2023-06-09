@@ -34,6 +34,13 @@ add_executable(${APP_NAME}
     Notes.txt
 )
 
+# Enable Edit & Continue: https://learn.microsoft.com/en-us/cpp/build/cmake-projects-in-visual-studio?view=msvc-170#edit-and-continue-for-cmake-projects
+if(MSVC)
+   target_compile_options(${APP_NAME} PUBLIC "/ZI")
+   target_link_options(${APP_NAME} PUBLIC "/INCREMENTAL")
+endif()
+
+
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
 

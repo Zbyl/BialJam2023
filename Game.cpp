@@ -19,6 +19,9 @@ void Game::mainLoop()
     while (!window.ShouldClose() && !shouldQuit)
     {
         if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_LEFT)) {
+            player.state = PlayerState::GROUNDED;
+            player.position = raylib::Vector2::Zero();
+            player.velocity = raylib::Vector2::Zero();
             player.load();
         }
 

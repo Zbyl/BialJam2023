@@ -24,23 +24,25 @@ void Menu::update() {
         return;
     }
 
+    float buttonWidth = 125;
+    float buttonX = (game.screenWidth - buttonWidth) / 2;
     // Back to game, Show controls, Full screeen, Quit
     std::vector< std::tuple< std::function<void()>, std::function<void()> > > items = {
         {
-            [this]() { GuiButton(raylib::Rectangle { 25, 100, 125, 30 }, GuiIconText(ICON_FILE_SAVE, "Back to game")); },
-            [this]() { show(false); },
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 200, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Back to game")); },
+            [=, this]() { show(false); },
         },
         {
-            [this]() { GuiButton(raylib::Rectangle { 25, 200, 125, 30 }, GuiIconText(ICON_FILE_SAVE, "Show controls")); },
-            [this]() {},
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 250, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Show controls")); },
+            [=, this]() {},
         },
         {
-            [this]() { GuiButton(raylib::Rectangle { 25, 300, 125, 30 }, GuiIconText(ICON_FILE_SAVE, game.window.IsFullscreen() ? "Exit full screen" : "Full screen")); },
-            [this]() { game.window.ToggleFullscreen(); },
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 300, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, game.window.IsFullscreen() ? "Exit full screen" : "Full screen")); },
+            [=, this]() { game.window.ToggleFullscreen(); },
         },
         {
-            [this]() { GuiButton(raylib::Rectangle { 25, 400, 125, 30 }, GuiIconText(ICON_FILE_SAVE, "Quit")); },
-            [this]() { game.shouldQuit = true; },
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Quit")); },
+            [=, this]() { game.shouldQuit = true; },
         },
     };
 

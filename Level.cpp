@@ -21,7 +21,9 @@ void Level::load(const std::string& levelFile) {
     tileSize = json["tileSize"].get<int>();
 
     auto musicPath = json["music"].get<std::string>();
+    auto musicVolume = json["musicVolume"].get<float>();
     music.Load((basePath / musicPath).string());
+    music.SetVolume(musicVolume);
 
     for (auto item : json["backgrounds"]) {
         auto imagePath = item.get<std::string>();

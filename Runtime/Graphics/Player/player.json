@@ -1,10 +1,17 @@
-[
+{
     "landMaxSpeed": 30,
-    "landAcceleration": 30,
-    "landDeceleration": 20,
+    "landAcceleration": 300,
+    "landDeceleration": 200,
     "airCorrectionAcceleration": 10,
-    "jumpVelocity": 40,
-    "jumpStopTime": 40,
-    "gravity": 10,
+
+    "jumpVelocity": 350,
+    "jumpAccelerationTime": 0.3,
+    "wallKickVelocity": { "x": 20, "y": 40 },
+    "wallKickAccelerationTime": 0.7,
+
+    "gravity": 50,
+    "glidingGravity": 25,
+    "jumpSustainGravity": 25,
+    "jumpButtonActiveTime": 0.03,
     "hitbox": { "x": 8, "y": 13, "width": 16, "height": 19 }
-]
+}

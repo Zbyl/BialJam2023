@@ -16,8 +16,6 @@ public:
     raylib::AudioDevice audioDevice;
     raylib::Gamepad gamepad;
 
-    raylib::Sound sfx;
-
     float levelTime = 0.0f; ///< In-game time since start of the level, in seconds. Not counting in-menu time.
     float levelTimeDelta = 0.0f; ///< In-game time since start of the last framw, in seconds. Not counting in-menu time.
     bool shouldQuit = false;
@@ -30,7 +28,6 @@ public:
 public:
     Game()
         : window(screenWidth, screenHeight, "KunekBogus")
-        , sfx("Sounds/663831__efindlay__springy-jump.wav")
         , menu(*this)
         , player(*this)
         , level(*this)
