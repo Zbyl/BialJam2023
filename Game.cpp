@@ -12,11 +12,28 @@ raylib::Vector2 Game::screenToWorld(raylib::Vector2 screenPosition) const {
     return { screenPosition.x - screenWidth / 2 + cameraPosition.x, (screenPosition.y - screenHeight / 2) + cameraPosition.y };
 }
 
-void Game::drawHud() {
-    auto [collectedCount, totalCount] = level.getCollectibleStats();
-    hudCollectible.position = raylib::Vector2{ 1200, 30 };
-    hudCollectible.update();
-    hudFont.DrawText((ZSTR() << collectedCount).str(), raylib::Vector2{ 1230.0f, 30.0f }, 40.0f, 1.0f, GOLD);
+void Game::drawHud(bool withTotals) {
+    if (!withTotals) {
+        auto startX = 1200.0f;
+        auto startY = 30.0f;
+        auto [collectedCount, totalCount] = level.getCollectibleStats();
+        hudCollectible.position = raylib::Vector2{ startX, startY };
+        hudCollectible.update();
+        hudFont.DrawText((ZSTR() << collectedCount).str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+    } else {
+        auto startX = 100.0f;
+        auto startY = 250.0f;
+        auto [collectedCount, totalCount] = level.getCollectibleStats();
+        hudCollectible.position = raylib::Vector2{ startX, startY };
+        hudCollectible.update();
+        hudFont.DrawText((ZSTR() << collectedCount << " / " << totalCount << " w poziomie").str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+
+        startX = 930.0f;
+        startY = 250.0f;
+        hudCollectible.position = raylib::Vector2{ startX, startY };
+        hudCollectible.update();
+        hudFont.DrawText((ZSTR() << totalCollected << " / " << totalAvailable << " w sumie").str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+    }
 }
 
 void Game::cameraUpdate() {
@@ -31,19 +48,29 @@ void Game::cameraUpdate() {
         if (player.position.y > cameraWindow.y + cameraWindow.height) cameraWindow.y = player.position.y - cameraWindow.height;
     }
 
+    cameraPosition = cameraWindow.GetPosition() + cameraWindow.GetSize() / 2.0f;
+
     // Move camera to be within level bounds.
-    if (cameraWindow.x < 0.0f) cameraWindow.x = 0.0f;
-    if (cameraWindow.y < 0.0f) cameraWindow.y = 0.0f;
-    if (cameraWindow.x + cameraWindow.width > level.levelWidth) cameraWindow.x = level.levelWidth - cameraWindow.width;
-    if (cameraWindow.y + cameraWindow.height > level.levelHeight) cameraWindow.y = level.levelHeight - cameraWindow.height;
+    raylib::Vector2 screenHalfSize { screenWidth / 2.0f, screenHeight / 2.0f };
+    raylib::Rectangle cameraView(cameraPosition - screenHalfSize, screenHalfSize * 2); // In world coordinates.
+    if (cameraView.x < 0.0f) cameraWindow.x -= cameraView.x;
+    if (cameraView.y < 0.0f) cameraWindow.y -= cameraView.y;
+    if (cameraView.x + cameraView.width > level.levelWidth) cameraWindow.x -= (cameraView.x + cameraView.width) - level.levelWidth;
+    if (cameraView.y + cameraView.height > level.levelHeight) cameraWindow.y -= (cameraView.y + cameraView.height) - level.levelHeight;
 
     cameraPosition = cameraWindow.GetPosition() + cameraWindow.GetSize() / 2.0f;
 }
 
 void Game::restartGame() {
+    level.endLevel();
+    for (auto screen : { &startScreen, &deadScreen, &levelEndScreen, &gameEndScreen })
+        screen->endScene();
+
     menu.setInMenu(true);
     gameState = GameState::START_SCREEN;
     totalCollected = 0;
+    startScreen.startScene();
+    currentLevel = 0;
 }
 
 void Game::restartLevel() {
@@ -51,15 +78,19 @@ void Game::restartLevel() {
 }
 
 void Game::startLevel(int levelIndex) {
+    menu.setInMenu(false);
+    menu.setMenuRectangle({ 0.0f, 200.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) });
     gameState = GameState::LEVEL;
     currentLevel = levelIndex;
     ZASSERT(currentLevel < std::ssize(levelFiles));
     level.load(levelFiles[currentLevel]);
+    level.startLevel();
     cameraPosition = player.position;
     cameraUpdate();
 }
 
 void Game::endLevel(bool died) {
+    menu.setInMenu(false);
     level.endLevel();
     for (auto screen : { &startScreen, &deadScreen, &levelEndScreen, &gameEndScreen })
         screen->endScene();
@@ -70,8 +101,8 @@ void Game::endLevel(bool died) {
     }
     else
     {
-        if (currentLevel < numLevels - 1) {
-            gameState = GameState::LEVEL_DIED;
+        if (currentLevel < std::ssize(levelFiles) - 1) {
+            gameState = GameState::LEVEL_SUCCESS;
             levelEndScreen.startScene();
         }
         else {
@@ -87,7 +118,7 @@ void Game::endLevel(bool died) {
 
 void Game::mainLoop()
 {
-    bool debug = true;
+    bool debug = false;
     raylib::Vector2 hitboxVelocity = { 0, 0 };
     raylib::Rectangle hitbox = { 0, 0, 0, 0 };
     hitbox.SetPosition(player.position);
@@ -104,6 +135,18 @@ void Game::mainLoop()
                 player.velocity = raylib::Vector2::Zero();
                 player.load();
             }
+        }
+
+        if (IsKeyPressed(KEY_SPACE))
+            debug = !debug;
+
+        if (debug) {
+            if (IsKeyPressed(KEY_E))
+                endLevel(false);
+            if (IsKeyPressed(KEY_D))
+                endLevel(true);
+            if (IsKeyPressed(KEY_R))
+                restartGame();
         }
 
         BeginDrawing();
@@ -124,7 +167,7 @@ void Game::mainLoop()
                 player.draw();
                 level.update();
 
-                drawHud();
+                drawHud(false);
 
                 if (level.levelExit.CheckCollision(player.position))
                     endLevel(false);
@@ -144,11 +187,13 @@ void Game::mainLoop()
         else
         if (gameState == GameState::START_SCREEN)
         {
-
+            startScreen.update();
         }
         else
         if (gameState == GameState::LEVEL_SUCCESS)
         {
+            levelEndScreen.update();
+            drawHud(true);
             if (levelEndScreen.areAnimationsFinished()) {
                 if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     startLevel(currentLevel + 1);
@@ -158,7 +203,8 @@ void Game::mainLoop()
         else
         if (gameState == GameState::LEVEL_DIED)
         {
-            if (levelEndScreen.areAnimationsFinished()) {
+            deadScreen.update();
+            if (deadScreen.areAnimationsFinished()) {
                 if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     menu.setInMenu(true);
                 }
@@ -167,12 +213,16 @@ void Game::mainLoop()
         else
         if (gameState == GameState::GAME_SUCCESS)
         {
-            if (levelEndScreen.areAnimationsFinished()) {
+            gameEndScreen.update();
+            drawHud(true);
+            if (gameEndScreen.areAnimationsFinished()) {
                 if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     restartGame();
                 }
             }
         }
+
+        menu.draw();
 
         if (debug) {
             // Debug Camera Window
@@ -202,6 +252,9 @@ void Game::mainLoop()
             if (touchingCeiling) DrawText("CEILING", 10, 310, 10, BLACK);
             if (touchingWall) DrawText((ZSTR() << "WALL ON " << ((touchingWallDirection == 1) ? "RIGHT" : "LEFT")).str().c_str(), 10, 320, 10, BLACK);
             DrawText((ZSTR() << "MOVE DELTA X: " << moveDelta.x << " Y: " << moveDelta.y).str().c_str(), 10, 330, 10, BLACK);
+
+            DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
+            DrawText((ZSTR() << "LEVEL: " << currentLevel << " / " << std::ssize(levelFiles)).str().c_str(), 10, 610, 10, RED);
         }
 
         EndDrawing();

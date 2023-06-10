@@ -73,7 +73,7 @@ void Player::step(float timeDelta) {
     }
 
     // Check collisions and push back.
-    auto [origin, image] = runAnimation.spriteForTime(animTime); // @todo Using anim for hitbox is broken here.
+    auto [origin, image, sound] = runAnimation.spriteForTime(animTime); // @todo Using anim for hitbox is broken here.
     raylib::Rectangle currentHitbox = { position - origin + hitbox.GetPosition(), hitbox.GetSize() };
     auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = game.level.collisionDetection(currentHitbox, velocity);
     if (grounded || touchingCeiling) {
@@ -219,7 +219,9 @@ void Player::step(float timeDelta) {
 }
 
 void Player::draw() {
-    auto [origin, image] = currentAnimation->spriteForTime(animTime);
+    auto [origin, image, sound] = currentAnimation->spriteForTime(animTime);
+    if (sound)
+        sound->Play();
     game.drawSprite(position, image, origin, facingDirection == -1);
 
     auto hitBoxPosition = game.worldToScreen(position - origin + hitbox.GetPosition());

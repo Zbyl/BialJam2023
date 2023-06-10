@@ -16,6 +16,17 @@ enum class GameState {
     GAME_SUCCESS,
 };
 
+inline std::string to_string(GameState state) {
+    switch (state) {
+        case GameState::START_SCREEN: return "START_SCREEN";
+        case GameState::LEVEL: return "LEVEL";
+        case GameState::LEVEL_SUCCESS: return "LEVEL_SUCCESS";
+        case GameState::LEVEL_DIED: return "LEVEL_DIED";
+        case GameState::GAME_SUCCESS: return "GAME_SUCCESS";
+    }
+    ZASSERT(false);
+}
+
 class Game
 {
 public:
@@ -50,7 +61,7 @@ public:
 
 public:
     Game()
-        : window(screenWidth, screenHeight, "KunekBogus")
+        : window(screenWidth, screenHeight, "Kunek Bogus")
         , menu(*this)
         , player(*this)
         , level(*this)
@@ -64,7 +75,6 @@ public:
     {
         SetTargetFPS(60); // Set our game to run at 60 frames-per-second
         hudCollectible.forHud = true;
-        menu.setInMenu(true);
     }
 
     void mainLoop();
@@ -74,7 +84,7 @@ public:
 
     void drawSprite(raylib::Vector2 worldPosition, const raylib::Texture2D& sprite, raylib::Vector2 spriteOrigin, bool horizontalMirror) const;
 
-    void drawHud();
+    void drawHud(bool withTotals);
     void cameraUpdate();
     void restartLevel();
     void restartGame();

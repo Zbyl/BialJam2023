@@ -19,8 +19,12 @@ public:
 
     std::vector<Animation> animations;
     std::vector<raylib::Vector2> positions;
+    std::vector<float> delays;
 
     float animTime = 0.0f;      ///< Time for current animation.
+    float sceneDelay = 0.0f;    ///< How much time to wait before buttons will start working.
+
+    raylib::Rectangle menuRectangle = { 0.0f, 0.0f, 1000.0f, 500.0f };
 
 public:
     Scene(Game& game, const std::string& sceneFile)
@@ -29,15 +33,8 @@ public:
         load(sceneFile);
     }
 
-    void startScene() {
-        animTime = 0.0f;
-        music.Seek(0);
-        music.Play();
-    }
-
-    void endScene() {
-        music.Stop();
-    }
+    void startScene();
+    void endScene();
 
     bool areAnimationsFinished() const;
     void update();

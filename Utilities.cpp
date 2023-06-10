@@ -43,3 +43,7 @@ std::tuple<int, float> divide(float value, float divisor) {
 
     return { result, remainder };
 }
+
+raylib::Rectangle loadJsonRect(const nlohmann::json& json) {
+    return { json["x"].get<float>(), json["y"].get<float>(), json["width"].get<float>(), json["height"].get<float>() };
+}

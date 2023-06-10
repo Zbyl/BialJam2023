@@ -32,7 +32,9 @@ void Collectible::update() {
 
     animTime += collectiblePrefab.game.levelTimeDelta;
 
-    auto [origin, image] = collectiblePrefab.wiggleAnimation.spriteForTime(animTime);
+    auto [origin, image, sound] = collectiblePrefab.wiggleAnimation.spriteForTime(animTime);
+    if (sound)
+        sound->Play();
     if (forHud)
         image.Draw(position - origin);
     else

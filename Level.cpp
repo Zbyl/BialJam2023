@@ -14,10 +14,6 @@
 #include <algorithm>
 
 
-raylib::Rectangle loadJsonRect(const nlohmann::json& json) {
-    return { json["x"].get<float>(), json["y"].get<float>(), json["width"].get<float>(), json["height"].get<float>() };
-}
-
 void Level::load(const std::string& levelFile) {
     backgrounds.clear();
     foregrounds.clear();
@@ -133,6 +129,8 @@ std::optional<TileType> Level::getTileRaw(int x, int y) const {
 }
 
 std::optional<TileType> Level::getTileWorld(raylib::Vector2 worldPosition) const {
+    if ((worldPosition.x < 0) || (worldPosition.y < 0))
+        return {};
     return getTileRaw(static_cast<int>(worldPosition.x) / tileSize, static_cast<int>(worldPosition.y) / tileSize);
 }
 
@@ -146,6 +144,10 @@ std::tuple<bool, bool, bool, int, raylib::Vector2> Level::collisionDetection(ray
 
     auto hitBoxTileX = static_cast<int>(hitBox.GetPosition().x) / tileSize;
     auto hitBoxTileY = static_cast<int>(hitBox.GetPosition().y) / tileSize;
+    if (hitBox.GetPosition().x < 0)
+        hitBoxTileX -= 1;
+    if (hitBox.GetPosition().y < 0)
+        hitBoxTileY -= 1;
 
     TileType blocks[4] = {
         getTileRaw(hitBoxTileX + 0, hitBoxTileY + 0).value_or(TileType::WALL),

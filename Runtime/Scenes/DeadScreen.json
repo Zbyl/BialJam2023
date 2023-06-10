@@ -1,0 +1,16 @@
+{
+    "music": "../Music/platformer_level03.mp3",
+    "musicVolume": 0.1,
+    "sceneDelay": 3.0,
+    "menuRectangle": { "x": 0, "y": 300, "width": 600, "height": 600 },
+    "animations": [
+        {
+            "position": { "x":  0, "y":  0 },
+            "image": "Dead.png"
+        },
+        {
+            "position": { "x":  582, "y":  358 },
+            "animation": "cry.json"
+        }
+    ]
+}

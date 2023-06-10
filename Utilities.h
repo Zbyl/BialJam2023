@@ -7,6 +7,8 @@
 #include <string>
 #include <tuple>
 
+#include "nlohmann/json.hpp"
+
 
 /// Exception thrown when a file is missing.
 class FileNotFoundException : public terminal_editor::GenericException {};
@@ -21,3 +23,5 @@ std::string loadTextFile(const std::string& fileName);
 ///          So: result * divisor + remainder = value.
 ///          remainder is always non-negative.
 std::tuple<int, float> divide(float value, float divisor);
+
+raylib::Rectangle loadJsonRect(const nlohmann::json& json);

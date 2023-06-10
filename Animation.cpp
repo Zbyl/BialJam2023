@@ -11,7 +11,7 @@
 #include <numeric>
 
 
-std::tuple< raylib::Vector2, raylib::Texture2D& > Animation::spriteForTime(float animationTime) {
+std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > Animation::spriteForTime(float animationTime) {
     ZASSERT(animationLength > 0.0f);
     while (animationTime >= animationLength)
         animationTime -= animationLength;
@@ -23,7 +23,7 @@ std::tuple< raylib::Vector2, raylib::Texture2D& > Animation::spriteForTime(float
             break;
     }
 
-    return std::tuple< raylib::Vector2, raylib::Texture2D& > { origins[i], images[i] };
+    return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins[i], images[i], sounds[i].has_value() ? &sounds[i].value() : nullptr };
 }
 
 
@@ -39,6 +39,16 @@ void Animation::load(const std::string& animFile) {
         auto originX = frame["origin"]["x"].get<float>();
         auto originY = frame["origin"]["y"].get<float>();
         auto delay = frame["delay"].get<float>();
+
+        std::string soundPath;
+        if (frame.contains("sound")) {
+            soundPath = frame["sound"].get<std::string>();
+        }
+
+        if (soundPath.empty())
+            sounds.emplace_back();
+        else
+            sounds.emplace_back((basePath / soundPath).string());
 
         if (imagePath.empty())
             images.emplace_back();
