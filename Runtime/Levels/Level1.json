@@ -1,8 +1,8 @@
 {
     "tileSize": 16,
     "ldtkMap": "Map0/simplified/Level_1",
-    "music": "../Music/platformer_level03.mp3",
-    "musicVolume": 0.1,
+    "music": "../Music/Oniku Loop2.wav",
+    "musicVolume": 0.5,
     "backgrounds": [ "Map0/simplified/Level_1/IntGrid.png", "Map0/simplified/Level_1/Detail.png" ],
     "foregrounds": [ "Map0/simplified/Level_1/Foreground.png" ],
     "paralaxLayers": [

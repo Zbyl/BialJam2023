@@ -204,6 +204,10 @@ void Player::step(float timeDelta) {
         velocity.y += glidingGravity * timeDelta;
     }
 
+    if ((oldState != state) && (state == PlayerState::GROUNDED)) {
+        groundSfx.Play();
+    }
+
     if (velocity.x > 0) velocity.x = std::min(velocity.x, landMaxSpeed);
     if (velocity.x < 0) velocity.x = std::max(velocity.x, -landMaxSpeed);
     position += velocity * timeDelta;

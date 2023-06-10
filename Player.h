@@ -82,11 +82,13 @@ public:
     bool jumpButtonOwned = false;           ///< Used to mark that this press of jump button was already "used". Different from jumpButtonBlocked because of jumpButtonActiveTime. @todo Maybe clean up.
 
     raylib::Sound jumpSfx;
+    raylib::Sound groundSfx;
 
 public:
     Player(Game& game)
         : game(game)
-        , jumpSfx("Sounds/663831__efindlay__springy-jump.wav")
+        , jumpSfx("Sounds/541210__eminyildirim__combat-whoosh.wav")
+        , groundSfx("Sounds/stomp.wav")
     {
         idleAnimation.load("Graphics/Player/player-idle.json");
         runAnimation.load("Graphics/Player/player-run.json");

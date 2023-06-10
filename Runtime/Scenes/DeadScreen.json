@@ -1,6 +1,6 @@
 {
-    "music": "../Music/platformer_level03.mp3",
-    "musicVolume": 0.1,
+    "music": "../Music/dramatic-music-hip-hop-background-jazz-music-beat-black-amp-white-148451.mp3",
+    "musicVolume": 0.5,
     "sceneDelay": 1.0,
     "menuRectangle": { "x": 0, "y": 300, "width": 600, "height": 600 },
     "animations": [

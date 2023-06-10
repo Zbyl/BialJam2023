@@ -22,7 +22,7 @@ public:
 public:
     CollectiblePrefab(Game& game)
         : game(game)
-        , collectSfx("Sounds/663831__efindlay__springy-jump.wav")
+        , collectSfx("Sounds/coin.wav")
     {
         wiggleAnimation.load("Graphics/Collectible/collectible-wiggle.json");
         load();

@@ -2,7 +2,7 @@
     { "image": "frame0000.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0001.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0002.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
-    { "image": "frame0003.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015, "sound": "../../Sounds/663831__efindlay__springy-jump.wav" },
+    { "image": "frame0003.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015, "sound": "../../Sounds/firework.wav" },
     { "image": "frame0004.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0005.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0006.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },

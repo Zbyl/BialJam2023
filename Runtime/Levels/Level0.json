@@ -2,7 +2,7 @@
     "tileSize": 16,
     "ldtkMap": "Map0/simplified/Level_0",
     "music": "../Music/platformer_level03.mp3",
-    "musicVolume": 0.1,
+    "musicVolume": 0.5,
     "backgrounds": [ "Map0/simplified/Level_0/IntGrid.png", "Map0/simplified/Level_0/Detail.png" ],
     "foregrounds": [ "Map0/simplified/Level_0/Foreground.png" ],
     "paralaxLayers": [
