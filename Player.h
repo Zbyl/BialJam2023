@@ -54,6 +54,7 @@ public:
     float jumpAccelerationTime;             ///< After this time stop applying jumpVelocity.
     raylib::Vector2 wallKickVelocity;       ///< Velocity to set when player holds jump button after wall kick.
     float wallKickAccelerationTime;         ///< After this time stop applying wallKickVelocity.
+    float jumpBackPenalty;                  ///< Multiplayer for velocity.x applied before jumping with direction pressed in opposite direction to movement direction.
 
     float gravity;                          ///< Gravity in pixels per second squared.
     float glidingGravity;                   ///< Gravity for gliding in pixels per second squared.
@@ -82,6 +83,7 @@ public:
         load();
     }
 
+    void collisionDetection();
     void update();
     void load();
 };

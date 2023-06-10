@@ -1,5 +1,7 @@
 #include "game.h"
 
+#include "zstr.h"
+
 
 raylib::Vector2 Game::worldToScreen(raylib::Vector2 worldPosition) const {
     auto delta = worldPosition - cameraPosition;
@@ -14,6 +16,9 @@ raylib::Vector2 Game::screenToWorld(raylib::Vector2 screenPosition) const {
 void Game::mainLoop()
 {
     level.startLevel();
+
+    raylib::Vector2 hitboxVelocity = { 0, 0 };
+    raylib::Rectangle hitbox = { 0, 0, 0, 0 };
 
     // Main game loop, detect window close button, ESC key or programmatic quit.
     while (!window.ShouldClose() && !shouldQuit)
@@ -42,6 +47,27 @@ void Game::mainLoop()
         }
 
         level.music.Update();
+
+        hitbox.SetSize(player.hitbox.GetSize());
+        if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_THUMB)) {
+            hitboxVelocity.x = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) * 10.0f;
+            hitboxVelocity.y = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) * 10.0f;
+        }
+        else {
+            hitbox.x += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X);
+            hitbox.y += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y);
+        }
+
+        auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = level.collisionDetection(hitbox, hitboxVelocity);
+        auto hitBoxPosition = worldToScreen(hitbox.GetPosition());
+        auto hitBoxCenter = worldToScreen(hitbox.GetPosition() + hitbox.GetSize() / 2);
+        auto arrowPoint = hitBoxCenter + hitboxVelocity;
+        DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), GREEN);
+        DrawLine(hitBoxCenter.x, hitBoxCenter.y, arrowPoint.x, arrowPoint.y, RED);
+        if (grounded) DrawText("GROUNDED", 10, 300, 10, BLACK);
+        if (touchingCeiling) DrawText("CEILING", 10, 310, 10, BLACK);
+        if (touchingWall) DrawText((ZSTR() << "WALL ON " << ((touchingWallDirection == 1) ? "RIGHT" : "LEFT")).str().c_str(), 10, 320, 10, BLACK);
+        DrawText((ZSTR() << "MOVE DELTA X: " << moveDelta.x << " Y: " << moveDelta.y).str().c_str(), 10, 330, 10, BLACK);
 
         EndDrawing();
         //----------------------------------------------------------------------------------

@@ -9,11 +9,12 @@
     "jumpAccelerationTime": 0.3,
     "wallKickVelocity": { "x": 300, "y": 300 },
     "wallKickAccelerationTime": 0.3,
+    "jumpBackPenalty": 0.6,
 
     "gravity": 50,
     "glidingGravity": 25,
     "jumpSustainGravity": 25,
     "wallKickSustainGravity": { "x": 25, "y": 25 },
     "jumpButtonActiveTime": 0.03,
-    "hitbox": { "x": 8, "y": 13, "width": 16, "height": 19 }
+    "hitbox": { "x": 7, "y": 17, "width": 14, "height": 15 }
 }

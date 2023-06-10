@@ -10,6 +10,9 @@
 
 #include <cmath>
 
+void Player::collisionDetection() {
+
+}
 
 void Player::update() {
     animTime += game.levelTimeDelta;
@@ -112,6 +115,9 @@ void Player::update() {
             jumpSfx.Play();
             jumpStartTime = game.levelTime;
             jumpButtonOwned = true;
+            if (std::signbit(static_cast<float>(axisX)) != std::signbit(velocity.x)) {
+                velocity.x *= jumpBackPenalty;
+            }
         }
         if (buttonJump && (game.levelTime <= jumpStartTime + jumpAccelerationTime)) {
             auto jumpTime = game.levelTime - jumpStartTime;
@@ -200,6 +206,9 @@ void Player::update() {
     DrawText((ZSTR() << "FACING: " << facingDirection << " GRAB: " << grabDirection << " KICK: " << wallKickDirection).str().c_str(), 10, 40, 10, BLACK);
     if (jumpButtonOwned)
         DrawText("JUMP OWNED", 10, 70, 10, BLACK);
+
+    auto hitBoxPosition = game.worldToScreen(position - origin + hitbox.GetPosition());
+    DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), RED);
 }
 
 void Player::load() {
@@ -220,6 +229,7 @@ void Player::load() {
     jumpAccelerationTime = json["jumpAccelerationTime"].get<float>();
     wallKickVelocity = raylib::Vector2{ json["wallKickVelocity"]["x"].get<float>(), json["wallKickVelocity"]["y"].get<float>() };
     wallKickAccelerationTime = json["wallKickAccelerationTime"].get<float>();
+    jumpBackPenalty = json["jumpBackPenalty"].get<float>();
 
     gravity = json["gravity"].get<float>();
     glidingGravity = json["glidingGravity"].get<float>();

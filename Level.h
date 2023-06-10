@@ -1,12 +1,29 @@
 #pragma once
 
+#include "zerrors.h"
+
 #include "raylib-cpp.hpp"
 
 #include <vector>
 #include <cstdint>
+#include <optional>
+#include <tuple>
 
 
 class Game;
+
+enum class TileType {
+    EMPTY = 0,
+    WALL = 1,
+};
+
+inline bool isCollider(TileType tile) {
+    switch (tile) {
+        case TileType::EMPTY: return false;
+        case TileType::WALL: return true;
+    }
+    ZASSERT(false);
+}
 
 class Level {
 private:
@@ -36,4 +53,9 @@ public:
 
     void drawBackground();
     void update();
+
+    std::optional<TileType> getTileRaw(int x, int y) const;
+    std::optional<TileType> getTileWorld(raylib::Vector2 worldPosition) const;
+
+    std::tuple<bool, bool, bool, int, raylib::Vector2> collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity);
 };

@@ -5,9 +5,19 @@
 #include "zerrors.h"
 
 #include <string>
+#include <tuple>
+
 
 /// Exception thrown when a file is missing.
 class FileNotFoundException : public terminal_editor::GenericException {};
 
 
 std::string loadTextFile(const std::string& fileName);
+
+/// Divides value by divisor.
+/// @param value    Value to divide.
+/// @param divisor  Must be > 0.
+/// @returns (result, remainder) - how many times divisor fits in value, and a remainder.
+///          So: result * divisor + remainder = value.
+///          remainder is always non-negative.
+std::tuple<int, float> divide(float value, float divisor);
