@@ -8,6 +8,8 @@
 
 #include "nlohmann/json.hpp"
 
+#include "raylib.h"
+
 #include <filesystem>
 #include <numeric>
 #include <sstream>
@@ -48,8 +50,10 @@ void Level::load(const std::string& levelFile) {
         auto imagePath = layer["image"].get<std::string>();
         auto scaleX = layer["scale"]["x"].get<float>();
         auto scaleY = layer["scale"]["y"].get<float>();
+        paralaxHaxxorOffsets.push_back(layer["paralaxHaxxorOffset"].get<float>());
 
         paralaxLayers.emplace_back((basePath / imagePath).string());
+        //paralaxLayers.back().SetWrap(TEXTURE_WRAP_REPEAT);
         paralaxScales.emplace_back(scaleX, scaleY);
     }
 
@@ -98,13 +102,18 @@ void Level::endLevel() {
 }
 
 void Level::drawBackground() {
-    for (int i = 0; i < std::ssize(backgrounds); ++i) {
-        backgrounds[i].Draw(game.worldToScreen({ 0.0f, 0.0f }));
-    }
-
     for (int i = 0; i < std::ssize(paralaxLayers); ++i) {
         auto pos = game.cameraPosition * paralaxScales[i];
-        //paralaxLayers[i].Draw(game.worldToScreen(pos));
+        pos.y += paralaxHaxxorOffsets[i];
+        //auto pos = raylib::Vector2::Zero();
+        paralaxLayers[i].Draw(game.worldToScreen(pos));
+        //game.drawSprite(pos, paralaxLayers[i], raylib::Vector2::Zero(), false);
+        //paralaxLayers[i].Draw(raylib::Rectangle {pos.x, pos.y, game.screenWidth * 1.0f, game.screenHeight * 1.0f}, raylib::Rectangle {0, 0, game.screenWidth * 1.0f, game.screenHeight * 1.0f});
+        DrawTextureTiled(paralaxLayers[i], raylib::Rectangle {pos.x, pos.y, game.screenWidth * 1.0f, game.screenHeight * 1.0f}, raylib::Rectangle {0, 0, game.screenWidth * 1.0f, game.screenHeight * 1.0f});
+    }
+
+    for (int i = 0; i < std::ssize(backgrounds); ++i) {
+        backgrounds[i].Draw(game.worldToScreen({ 0.0f, 0.0f }));
     }
 }
 

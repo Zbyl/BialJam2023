@@ -70,7 +70,7 @@ public:
     raylib::Vector2 wallKickSustainGravity; ///< Gravity and deceleration applied during wallKickAccelerationTime.
     float jumpButtonActiveTime;             ///< Jump button is considered pressed for this amount of time after initial press (even if not held any more).
     raylib::Rectangle hitbox;               ///< Hitbox of the player.
-    raylib::Vector2 cameraWindow;           ///< Fractions of the screen palyer must be in, unless level border doesn't allow it. @todo Should be in Game, but no time...
+    raylib::Rectangle cameraWindow;         ///< Fractions of the screen palyer must be in, unless level border doesn't allow it. @todo Should be in Game, but no time...
 
     float jumpButtonLastPressTime = -10.0f; ///< Time when user last pressed jump button.
     float jumpStartTime = -10.0f;           ///< Time when user started jumping/wall_kicking.

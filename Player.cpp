@@ -225,7 +225,7 @@ void Player::draw() {
     game.drawSprite(position, image, origin, facingDirection == -1);
 
     auto hitBoxPosition = game.worldToScreen(position - origin + hitbox.GetPosition());
-    DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), RED);
+    //DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), RED);
 }
 
 void Player::load() {
@@ -255,5 +255,5 @@ void Player::load() {
     jumpButtonActiveTime = json["jumpButtonActiveTime"].get<float>();
     hitbox = raylib::Rectangle{ json["hitbox"]["x"].get<float>(), json["hitbox"]["y"].get<float>(), json["hitbox"]["width"].get<float>(), json["hitbox"]["height"].get<float>() };
 
-    cameraWindow = raylib::Vector2{ json["cameraWindow"]["width"].get<float>(), json["cameraWindow"]["height"].get<float>() };
+    cameraWindow = loadJsonRect(json["cameraWindow"]);
 }

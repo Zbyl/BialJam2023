@@ -21,7 +21,7 @@ public:
     Menu(Game& game) : game(game) {}
 
     bool isInMenu() const { return inMenu; }
-    void setInMenu(bool inMenu) { if (this->inMenu == inMenu) return; this->inMenu = inMenu; if (inMenu) focusedItem = 0; }
+    void setInMenu(bool inMenu) { this->inMenu = inMenu; focusedItem = 0; }
     void setMenuRectangle(raylib::Rectangle menuRectangle) { this->menuRectangle = menuRectangle; }
 
     void show(bool doShow)

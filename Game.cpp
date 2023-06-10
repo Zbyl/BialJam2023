@@ -37,8 +37,9 @@ void Game::drawHud(bool withTotals) {
 }
 
 void Game::cameraUpdate() {
-    raylib::Vector2 cameraWindowHalfSize { player.cameraWindow.x * screenWidth / 2.0f, player.cameraWindow.y * screenHeight / 2.0f };
-    raylib::Rectangle cameraWindow(cameraPosition - cameraWindowHalfSize, cameraWindowHalfSize * 2); // In world coordinates.
+    raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
+    raylib::Vector2 screenHalfSize { screenWidth / 2.0f, screenHeight / 2.0f };
+    raylib::Rectangle cameraWindow(cameraPosition - screenHalfSize + wndRect.GetPosition(), wndRect.GetSize()); // In world coordinates.
 
     if (!cameraWindow.CheckCollision(player.position)) {
         // Move camera to put player inside.
@@ -51,7 +52,6 @@ void Game::cameraUpdate() {
     cameraPosition = cameraWindow.GetPosition() + cameraWindow.GetSize() / 2.0f;
 
     // Move camera to be within level bounds.
-    raylib::Vector2 screenHalfSize { screenWidth / 2.0f, screenHeight / 2.0f };
     raylib::Rectangle cameraView(cameraPosition - screenHalfSize, screenHalfSize * 2); // In world coordinates.
     if (cameraView.x < 0.0f) cameraWindow.x -= cameraView.x;
     if (cameraView.y < 0.0f) cameraWindow.y -= cameraView.y;
@@ -199,6 +199,7 @@ void Game::mainLoop()
             if (levelEndScreen.areAnimationsFinished()) {
                 if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     startLevel(currentLevel + 1);
+                    hackDisableMenuUpdate = true;
                 }
             }
         }
@@ -207,8 +208,9 @@ void Game::mainLoop()
         {
             deadScreen.update();
             if (deadScreen.areAnimationsFinished()) {
-                if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+                if (!menu.isInMenu() && gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     menu.setInMenu(true);
+                    hackDisableMenuUpdate = true;
                 }
             }
         }
@@ -231,9 +233,8 @@ void Game::mainLoop()
         if (debug) {
             // Debug Camera Window
             auto cameraScreenPosition = worldToScreen(cameraPosition);
-            raylib::Vector2 wndSize = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight };
-            auto topLeft = cameraScreenPosition - wndSize / 2;
-            DrawRectangleLines(topLeft.x, topLeft.y, wndSize.x, wndSize.y, BLUE);
+            raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
+            DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
 
             // Debug HitBox
             hitbox.SetSize(player.hitbox.GetSize());

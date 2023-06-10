@@ -17,5 +17,5 @@
     "wallKickSustainGravity": { "x": 25, "y": 25 },
     "jumpButtonActiveTime": 0.03,
     "hitbox": { "x": 7, "y": 17, "width": 14, "height": 15 },
-    "cameraWindow" : { "width": 0.8, "height": 0.8 }
+    "cameraWindow" : { "x": 0.1, "y": 0.25, "width": 0.4, "height": 0.5 }
 }

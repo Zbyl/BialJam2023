@@ -3,16 +3,18 @@
     "ldtkMap": "Map0/simplified/Level_0",
     "music": "../Music/platformer_level03.mp3",
     "musicVolume": 0.1,
-    "backgrounds": [ "Map0/simplified/Level_0/_bg.png", "Map0/simplified/Level_0/IntGrid.png", "Map0/simplified/Level_0/Detail.png" ],
-    "foregrounds": [],
+    "backgrounds": [ "Map0/simplified/Level_0/IntGrid.png", "Map0/simplified/Level_0/Detail.png" ],
+    "foregrounds": [ "Map0/simplified/Level_0/Foreground.png" ],
     "paralaxLayers": [
         {
-            "image": "../Graphics/Backgrounds/back.png",
-            "scale": { "x":  0.1, "y":  0.1 }
+            "image": "../Graphics/Backgrounds/sea.png",
+            "scale": { "x":  0.5, "y":  0.05 },
+            "paralaxHaxxorOffset": 650
         },
         {
-            "image": "../Graphics/Backgrounds/middle.png",
-            "scale": { "x":  0.3, "y":  0.3 }
+            "image": "../Graphics/Backgrounds/trees.png",
+            "scale": { "x":  0.8, "y":  0.2 },
+            "paralaxHaxxorOffset": 500
         }
     ]
 }

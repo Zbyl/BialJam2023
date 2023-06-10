@@ -18,6 +18,7 @@ enum class TileType {
     EMPTY = 0,
     WALL = 1,
     LAVA = 2,
+    INVISIBLE_WALL = 3,
 };
 
 inline bool isCollider(TileType tile) {
@@ -25,6 +26,7 @@ inline bool isCollider(TileType tile) {
         case TileType::EMPTY: return false;
         case TileType::WALL: return true;
         case TileType::LAVA: return true;
+        case TileType::INVISIBLE_WALL: return true;
     }
     ZASSERT(false);
 }
@@ -47,6 +49,7 @@ private:
     std::vector<raylib::Texture2D> paralaxLayers;
     std::vector<raylib::Vector2> paralaxScales;
     std::vector<int8_t> levelData; ///< Level data, where top-left tile is first, bottom-right is last.
+    std::vector<float> paralaxHaxxorOffsets; ///< Add to paralax y, cause no time to fix...
 
     std::vector<Collectible> collectibles;
 
