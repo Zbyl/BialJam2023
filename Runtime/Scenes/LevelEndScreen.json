@@ -9,7 +9,7 @@
             "image": "LevelEndScreen.png"
         },
         {
-            "position": { "x":  629, "y":  494 },
+            "position": { "x":  622, "y":  596 },
             "animation": "../Graphics/Player/player-idle.json"
         },
         {

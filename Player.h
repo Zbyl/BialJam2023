@@ -88,7 +88,7 @@ public:
     Player(Game& game)
         : game(game)
         , jumpSfx("Sounds/541210__eminyildirim__combat-whoosh.wav")
-        , groundSfx("Sounds/stomp.wav")
+        , groundSfx("Sounds/step.wav")
     {
         idleAnimation.load("Graphics/Player/player-idle.json");
         runAnimation.load("Graphics/Player/player-run.json");
