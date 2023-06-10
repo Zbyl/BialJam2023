@@ -69,5 +69,6 @@
     { "image": "frame0067.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0068.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
     { "image": "frame0069.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
-    { "image": "frame0070.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 }
+    { "image": "frame0070.png", "origin": { "x":  50, "y": 50 }, "delay": 0.015 },
+    { "image": "", "origin": { "x":  50, "y": 50 }, "delay": 0.015 }
 ]

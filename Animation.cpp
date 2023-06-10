@@ -13,6 +13,10 @@
 
 std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > Animation::spriteForTime(float animationTime) {
     ZASSERT(animationLength > 0.0f);
+
+    if (!loop && (animationTime >= animationLength))
+        return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins.back(), images.back(), nullptr };
+
     while (animationTime >= animationLength)
         animationTime -= animationLength;
     float time = 0.0f;
@@ -63,6 +67,7 @@ void Animation::load(const std::string& animFile) {
 
 void Animation::fromPicture(const std::string& imageFile, float length) {
     images.emplace_back(imageFile);
+    sounds.emplace_back();
     origins.emplace_back(0.0f, 0.0f);
     delays.push_back(length);
     animationLength = length;

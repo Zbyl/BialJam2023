@@ -1,7 +1,7 @@
 {
     "music": "../Music/platformer_level03.mp3",
     "musicVolume": 0.1,
-    "sceneDelay": 3.0,
+    "sceneDelay": 1.0,
     "menuRectangle": { "x": 0, "y": 300, "width": 600, "height": 600 },
     "animations": [
         {

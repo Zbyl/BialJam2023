@@ -14,6 +14,8 @@ private:
     std::vector<raylib::Vector2> origins;
     std::vector<float> delays;      ///< How long to display given frame (in seconds).
     float animationLength = 0.0f;   ///< How long is the animation (in seconds).
+
+public:
     bool loop = true;               ///< True to loop.
 
 public:

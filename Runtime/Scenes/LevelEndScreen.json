@@ -1,7 +1,7 @@
 {
     "music": "../Music/platformer_level03.mp3",
     "musicVolume": 0.1,
-    "sceneDelay": 3.0,
+    "sceneDelay": 1.0,
     "menuRectangle": { "x": 0, "y": 300, "width": 600, "height": 600 },
     "animations": [
         {
@@ -13,24 +13,28 @@
             "animation": "../Graphics/Player/player-idle.json"
         },
         {
-            "delay": 0.0f,
+            "delay": 0.0,
+            "loop": false,
             "position": { "x":  227, "y":  223 },
             "animation": "firework-1/firework-1.json"
         },
         {
-            "delay": 0.9f,
+            "delay": 1.0,
+            "loop": false,
             "position": { "x":  751, "y":  329 },
             "animation": "firework-2/firework-2.json"
         },
         {
-            "delay": 1.5f,
+            "delay": 1.5,
+            "loop": false,
             "position": { "x":  529, "y":  369 },
-            "animation": "firework-1/firework-1.json"
+            "animation": "firework-2/firework-2.json"
         },
         {
-            "delay": 2.2f,
+            "delay": 2.2,
+            "loop": false,
             "position": { "x":  925, "y":  212 },
-            "animation": "firework-2/firework-2.json"
+            "animation": "firework-1/firework-1.json"
         }
     ]
 }

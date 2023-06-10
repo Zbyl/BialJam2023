@@ -154,6 +154,8 @@ void Game::mainLoop()
 
         menu.update();
 
+        bool hackDisableMenuUpdate = false;
+
         if (gameState == GameState::LEVEL) {
             if (!menu.isInMenu())
             {
@@ -218,11 +220,13 @@ void Game::mainLoop()
             if (gameEndScreen.areAnimationsFinished()) {
                 if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
                     restartGame();
+                    hackDisableMenuUpdate = true;
                 }
             }
         }
 
-        menu.draw();
+        if (!hackDisableMenuUpdate)
+            menu.draw();
 
         if (debug) {
             // Debug Camera Window

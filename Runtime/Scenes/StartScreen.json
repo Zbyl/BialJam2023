@@ -1,7 +1,7 @@
 {
     "music": "../Music/platformer_level03.mp3",
     "musicVolume": 0.1,
-    "sceneDelay": 3.0,
+    "sceneDelay": 1.0,
     "menuRectangle": { "x": 0, "y": 350, "width": 600, "height": 600 },
     "animations": [
         {
@@ -9,7 +9,7 @@
             "image": "StartScreen.png"
         },
         {
-            "position": { "x":  648, "y":  451 },
+            "position": { "x":  648, "y":  454 },
             "animation": "../Graphics/Player/player-idle.json"
         }
     ]

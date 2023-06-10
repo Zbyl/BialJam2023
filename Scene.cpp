@@ -48,6 +48,10 @@ void Scene::load(const std::string& sceneFile) {
         } else {
             delays.push_back(0.0f);
         }
+        auto loop = true;
+        if (animation.contains("loop")) {
+            loop = animation["loop"].get<bool>();
+        }
         if (animation.contains("image")) {
             auto imagePath = animation["image"].get<std::string>();
             animations.emplace_back();
@@ -57,6 +61,7 @@ void Scene::load(const std::string& sceneFile) {
             auto animationPath = animation["animation"].get<std::string>();
             animations.emplace_back();
             animations.back().load((basePath / animationPath).string());
+            animations.back().loop = loop;
         }
     }
 }
