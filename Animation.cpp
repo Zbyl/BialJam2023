@@ -40,10 +40,20 @@ void Animation::load(const std::string& animFile) {
         auto originY = frame["origin"]["y"].get<float>();
         auto delay = frame["delay"].get<float>();
 
-        images.emplace_back((basePath / imagePath).string());
+        if (imagePath.empty())
+            images.emplace_back();
+        else
+            images.emplace_back((basePath / imagePath).string());
         origins.emplace_back(originX, originY);
         delays.push_back(delay);
     }
 
     animationLength = std::accumulate(delays.begin(), delays.end(), 0.0f);
+}
+
+void Animation::fromPicture(const std::string& imageFile, float length) {
+    images.emplace_back(imageFile);
+    origins.emplace_back(0.0f, 0.0f);
+    delays.push_back(length);
+    animationLength = length;
 }

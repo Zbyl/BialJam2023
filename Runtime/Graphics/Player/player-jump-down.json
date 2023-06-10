@@ -1,0 +1,7 @@
+[
+    {
+        "image": "player-jump-2.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+   }
+]

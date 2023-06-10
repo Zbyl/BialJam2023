@@ -14,7 +14,19 @@
 #include <algorithm>
 
 
+raylib::Rectangle loadJsonRect(const nlohmann::json& json) {
+    return { json["x"].get<float>(), json["y"].get<float>(), json["width"].get<float>(), json["height"].get<float>() };
+}
+
 void Level::load(const std::string& levelFile) {
+    backgrounds.clear();
+    foregrounds.clear();
+    paralaxLayers.clear();
+    paralaxScales.clear();
+    levelData.clear();
+    collectibles.clear();
+
+    // Custom data
     auto jsonText = loadTextFile(levelFile);
     auto json = nlohmann::json::parse(jsonText);
     auto basePath = std::filesystem::path(levelFile).parent_path();
@@ -45,14 +57,25 @@ void Level::load(const std::string& levelFile) {
         paralaxScales.emplace_back(scaleX, scaleY);
     }
 
+    // LDtk data
     auto ldtkDir = basePath / json["ldtkMap"].get<std::string>();
     auto ldtkDataText = loadTextFile((ldtkDir / "data.json").string());
     auto ldtkData = nlohmann::json::parse(ldtkDataText);
+
     levelWidth = ldtkData["width"].get<int>();
     levelHeight = ldtkData["height"].get<int>();
     ZASSERT(levelWidth % tileSize == 0);
     ZASSERT(levelHeight % tileSize == 0);
 
+    playerStartPosition = loadJsonRect(ldtkData["entities"]["PlayerStart"][0]).GetPosition();
+    levelExit = loadJsonRect(ldtkData["entities"]["Exit"][0]);
+
+    for (const auto& collectible : ldtkData["entities"]["Collectible"]) {
+        collectibles.emplace_back(game.collectiblePrefab);
+        collectibles.back().position = loadJsonRect(collectible).GetPosition();
+    }
+
+    // IntGrid
     auto intGridText = loadTextFile((ldtkDir / "IntGrid.csv").string());
     std::stringstream intGridStream(intGridText);
     auto levelSize = (levelWidth / tileSize) * (levelHeight / tileSize);
@@ -69,8 +92,13 @@ void Level::load(const std::string& levelFile) {
 }
 
 void Level::startLevel() {
+    music.Seek(0);
     music.Play();
-    game.player.position = playerStartPosition;
+    game.player.setInitialState(playerStartPosition);
+}
+
+void Level::endLevel() {
+    music.Stop();
 }
 
 void Level::drawBackground() {
@@ -87,6 +115,10 @@ void Level::drawBackground() {
 void Level::update() {
     for (int i = 0; i < std::ssize(foregrounds); ++i) {
         foregrounds[i].Draw(game.worldToScreen({ 0.0f, 0.0f }));
+    }
+
+    for (auto& collectible : collectibles) {
+        collectible.update();
     }
 }
 
@@ -255,4 +287,14 @@ std::tuple<bool, bool, bool, int, raylib::Vector2> Level::collisionDetection(ray
     }
 
     return { grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta };
+}
+
+std::tuple<int, int> Level::getCollectibleStats() const {
+    int collectedCount = 0;
+    int totalCount = 0;
+    for (auto& collectible : collectibles) {
+        if (collectible.collected) collectedCount++;
+        if (!collectible.forHud) totalCount++;
+    }
+    return { collectedCount, totalCount };
 }

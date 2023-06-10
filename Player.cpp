@@ -10,13 +10,25 @@
 
 #include <cmath>
 
-void Player::collisionDetection() {
-
-}
 
 void Player::update() {
     animTime += game.levelTimeDelta;
 
+    auto steps = 20.0f;
+    auto timeDelta = game.levelTimeDelta / steps;
+    for (int i = 0; i < steps; ++i) {
+        step(timeDelta);
+    }
+
+    DrawText((ZSTR() << "PLAYER STATE: " << to_string(state)).str().c_str(), 10, 10, 10, BLACK);
+    DrawText((ZSTR() << "POS X: " << position.x << " Y: " << position.y).str().c_str(), 10, 20, 10, BLACK);
+    DrawText((ZSTR() << "VEL X: " << velocity.x << " Y: " << velocity.y).str().c_str(), 10, 30, 10, BLACK);
+    DrawText((ZSTR() << "FACING: " << facingDirection << " GRAB: " << grabDirection << " KICK: " << wallKickDirection).str().c_str(), 10, 40, 10, BLACK);
+    if (jumpButtonOwned)
+        DrawText("JUMP OWNED", 10, 70, 10, BLACK);
+}
+
+void Player::step(float timeDelta) {
     auto currentXAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_X);
     auto currentYAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y);
 
@@ -26,17 +38,17 @@ void Player::update() {
     auto buttonGrab = false;
     auto buttonGlide = false;
 
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (currentXAxisValue > 0.5f)) { // Left Right or D-Pad right
+    if (currentXAxisValue > 0.5f) {
         axisX += 1;
     }
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (currentXAxisValue < -0.5f)) { // Left Left or D-Pad left
+    if (currentXAxisValue < -0.5f) {
         axisX -= 1;
     }
 
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_UP) || (currentYAxisValue < -0.5f)) { // Left Up or D-Pad up
+    if (currentYAxisValue < -0.5f) {
         axisY -= 1;
     }
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (currentYAxisValue > 0.5f)) { // Left Down or D-Pad down
+    if (currentYAxisValue > 0.5f) {
         axisY += 1;
     }
 
@@ -61,19 +73,18 @@ void Player::update() {
     }
 
     // Check collisions and push back.
-    if (position.y > 0.0f) {
-        position.y = 0.0f;
+    auto [origin, image] = runAnimation.spriteForTime(animTime); // @todo Using anim for hitbox is broken here.
+    raylib::Rectangle currentHitbox = { position - origin + hitbox.GetPosition(), hitbox.GetSize() };
+    auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = game.level.collisionDetection(currentHitbox, velocity);
+    if (grounded || touchingCeiling) {
         velocity.y = 0.0f;
     }
-    if (position.x < 0.0f) {
-        position.x = 0.0f;
-        velocity.x = 0.0f;
+    if (touchingWall) {
+        if ((velocity.x > 0) && (touchingWallDirection == 1))
+            velocity.x = 0.0f;
+        if ((velocity.x < 0) && (touchingWallDirection == -1))
+            velocity.x = 0.0f;
     }
-
-    bool grounded = position.y >= 0.0f;
-    bool touchingWall = position.x <= 0.0f;
-    int touchingWallDirection = touchingWall ? -1 : 0; // 1 right, -1 left, 0 not touching. If both sides, player direction is used.
-    bool touchingCeiling = false;
 
     auto oldState = state;
     if (grounded) {
@@ -164,7 +175,7 @@ void Player::update() {
     }
 
     if ((state == PlayerState::JUMPING) || (state == PlayerState::FALLING)) {
-        velocity.x += axisX * airCorrectionAcceleration * game.levelTimeDelta;
+        velocity.x += axisX * airCorrectionAcceleration * timeDelta;
         if (axisX != 0) {
             facingDirection = axisX;
         }
@@ -173,39 +184,43 @@ void Player::update() {
     if (state == PlayerState::GROUNDED) {
         if (axisX != 0) {
             if (std::signbit(static_cast<float>(axisX)) == std::signbit(velocity.x))
-                velocity.x += axisX * landAcceleration * game.levelTimeDelta;
+                velocity.x += axisX * landAcceleration * timeDelta;
             else
-                velocity.x += axisX * landHardDeceleration * game.levelTimeDelta;
+                velocity.x += axisX * landHardDeceleration * timeDelta;
             facingDirection = axisX;
         }
         else
             if (velocity.x > 0)
-                velocity.x = std::max(0.0f, velocity.x - landDeceleration * game.levelTimeDelta);
+                velocity.x = std::max(0.0f, velocity.x - landDeceleration * timeDelta);
             else
-                velocity.x = std::min(0.0f, velocity.x + landDeceleration * game.levelTimeDelta);
+                velocity.x = std::min(0.0f, velocity.x + landDeceleration * timeDelta);
     }
 
     if (state == PlayerState::FALLING) {
-        velocity.y += gravity;
+        velocity.y += gravity * timeDelta;
     }
     else
     if (state == PlayerState::GLIDING) {
-        velocity.y += glidingGravity;
+        velocity.y += glidingGravity * timeDelta;
     }
 
     if (velocity.x > 0) velocity.x = std::min(velocity.x, landMaxSpeed);
     if (velocity.x < 0) velocity.x = std::max(velocity.x, -landMaxSpeed);
-    position += velocity * game.levelTimeDelta;
+    position += velocity * timeDelta;
 
-    auto [origin, image] = runAnimation.spriteForTime(animTime);
+    switch (state) {
+        case PlayerState::GROUNDED: currentAnimation = (std::fabs(velocity.x) > 0.1f) ? &runAnimation : &idleAnimation; break;
+        case PlayerState::JUMPING: currentAnimation = (velocity.y < 0.0f) ? &jumpUpAnimation : &jumpDownAnimation; break;
+        case PlayerState::WALL_KICK: currentAnimation = &jumpUpAnimation; break;
+        case PlayerState::FALLING: currentAnimation = (velocity.y < 0.0f) ? &jumpUpAnimation : &jumpDownAnimation; break;
+        case PlayerState::GRABBING: currentAnimation = &glideAnimation; break;
+        case PlayerState::GLIDING: currentAnimation = &grabAnimation; break;
+    }
+}
+
+void Player::draw() {
+    auto [origin, image] = currentAnimation->spriteForTime(animTime);
     game.drawSprite(position, image, origin, facingDirection == -1);
-
-    DrawText((ZSTR() << "PLAYER STATE: " << to_string(state)).str().c_str(), 10, 10, 10, BLACK);
-    DrawText((ZSTR() << "POS X: " << position.x << " Y: " << position.y).str().c_str(), 10, 20, 10, BLACK);
-    DrawText((ZSTR() << "VEL X: " << velocity.x << " Y: " << velocity.y).str().c_str(), 10, 30, 10, BLACK);
-    DrawText((ZSTR() << "FACING: " << facingDirection << " GRAB: " << grabDirection << " KICK: " << wallKickDirection).str().c_str(), 10, 40, 10, BLACK);
-    if (jumpButtonOwned)
-        DrawText("JUMP OWNED", 10, 70, 10, BLACK);
 
     auto hitBoxPosition = game.worldToScreen(position - origin + hitbox.GetPosition());
     DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), RED);
@@ -237,4 +252,6 @@ void Player::load() {
     wallKickSustainGravity = raylib::Vector2{ json["wallKickSustainGravity"]["x"].get<float>(), json["wallKickSustainGravity"]["y"].get<float>() };
     jumpButtonActiveTime = json["jumpButtonActiveTime"].get<float>();
     hitbox = raylib::Rectangle{ json["hitbox"]["x"].get<float>(), json["hitbox"]["y"].get<float>(), json["hitbox"]["width"].get<float>(), json["hitbox"]["height"].get<float>() };
+
+    cameraWindow = raylib::Vector2{ json["cameraWindow"]["width"].get<float>(), json["cameraWindow"]["height"].get<float>() };
 }

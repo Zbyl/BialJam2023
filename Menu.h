@@ -16,6 +16,7 @@ public:
     Menu(Game& game) : game(game) {}
 
     bool isInMenu() const { return inMenu; }
+    void setInMenu(bool inMenu) { this->inMenu = inMenu; }
 
     void show(bool doShow)
     {

@@ -27,24 +27,50 @@ void Menu::update() {
     float buttonWidth = 125;
     float buttonX = (game.screenWidth - buttonWidth) / 2;
     // Back to game, Show controls, Full screeen, Quit
-    std::vector< std::tuple< std::function<void()>, std::function<void()> > > items = {
-        {
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 200, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Back to game")); },
-            [=, this]() { show(false); },
-        },
-        {
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 250, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Show controls")); },
-            [=, this]() {},
-        },
-        {
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 300, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, game.window.IsFullscreen() ? "Exit full screen" : "Full screen")); },
-            [=, this]() { game.window.ToggleFullscreen(); },
-        },
-        {
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Quit")); },
-            [=, this]() { game.shouldQuit = true; },
-        },
+    std::vector< std::tuple< std::function<void()>, std::function<void()> > > items;
+    auto yPosition = 200.0f;
+    auto addItem = [&items](std::tuple< std::function<void()>, std::function<void()> > item) {
+        items.push_back(item);
     };
+
+    if (game.gameState == GameState::START_SCREEN)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_REREDO_FILL, "Start game")); },
+            [=, this]() { game.startLevel(0); },
+        });
+    if (game.gameState == GameState::LEVEL)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 200, buttonWidth, 30 }, GuiIconText(ICON_UNDO_FILL, "Back to game")); },
+            [=, this]() { show(false); },
+        });
+    if ((game.gameState == GameState::LEVEL) || (game.gameState == GameState::LEVEL_DIED))
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_REREDO_FILL, "Restart level")); },
+            [=, this]() { game.restartLevel(); },
+        });
+    if (game.gameState != GameState::START_SCREEN)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_REREDO_FILL, "Restart game")); },
+            [=, this]() { game.restartGame(); },
+        });
+    if (false)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 250, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, "Save")); },
+            [=, this]() {},
+        });
+    if (false)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, 250, buttonWidth, 30 }, GuiIconText(ICON_TARGET_MOVE_FILL, "Show controls")); },
+            [=, this]() {},
+        });
+    addItem({
+        [=, this]() { GuiButton(raylib::Rectangle { buttonX, 300, buttonWidth, 30 }, GuiIconText(ICON_CURSOR_SCALE, game.window.IsFullscreen() ? "Exit full screen" : "Full screen")); },
+        [=, this]() { game.window.ToggleFullscreen(); },
+    });
+    addItem({
+        [=, this]() { GuiButton(raylib::Rectangle { buttonX, 350, buttonWidth, 30 }, GuiIconText(ICON_EXIT, "Quit")); },
+        [=, this]() { game.shouldQuit = true; },
+    });
 
     int numItems = std::ssize(items);
 

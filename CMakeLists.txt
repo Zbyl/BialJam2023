@@ -25,6 +25,10 @@ add_executable(${APP_NAME}
     Animation.cpp
     Level.h
     Level.cpp
+    Collectible.h
+    Collectible.cpp
+    Scene.h
+    Scene.cpp
     Utilities.h
     Utilities.cpp
 

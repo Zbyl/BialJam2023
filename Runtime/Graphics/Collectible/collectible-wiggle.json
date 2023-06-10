@@ -1,0 +1,37 @@
+[
+    {
+        "image": "cherry-1.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-2.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-3.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-4.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-5.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-6.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    },
+    {
+        "image": "cherry-7.png",
+        "origin": { "x":  10, "y":  10 },
+        "delay": 0.1
+    }
+]

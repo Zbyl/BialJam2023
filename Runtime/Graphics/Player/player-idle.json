@@ -1,0 +1,22 @@
+[
+    {
+        "image": "player-idle-1.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-idle-2.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-idle-3.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-idle-4.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+    }
+]

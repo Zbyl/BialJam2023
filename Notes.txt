@@ -26,4 +26,4 @@ GJK: https://blog.winter.dev/2020/gjk-algorithm/   https://www.youtube.com/watch
 Notes:
 - Graphics: https://ansimuz.itch.io/sunny-land-pixel-game-art
 - Jump: https://freesound.org/people/EFindlay/sounds/663831/
-
+- JUPITER_CRASH FONT designed by Brian Kent (AEnigma)

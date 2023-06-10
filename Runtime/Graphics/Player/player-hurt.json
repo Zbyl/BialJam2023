@@ -1,0 +1,12 @@
+[
+    {
+        "image": "player-hurt-1.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+    },
+    {
+        "image": "player-hurt-2.png",
+        "origin": { "x":  14, "y":  31 },
+        "delay": 0.1
+   }
+]

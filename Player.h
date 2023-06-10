@@ -36,13 +36,21 @@ private:
     Game& game;
 
 public:
-    PlayerState state;
-    raylib::Vector2 position;
-    raylib::Vector2 velocity;
+    PlayerState state = PlayerState::GROUNDED;
+    raylib::Vector2 position = { 0.0f, 0.0f };
+    raylib::Vector2 velocity = { 0.0f, 0.0f };
     int facingDirection = 1;          ///< Player direction: 1 - right, -1 - left. Usually same as velocity.x, but sometimes not (when player is reversing, for example).
 
     float animTime = 0.0f; ///< Time for current animation.
+    Animation* currentAnimation = &idleAnimation;
+    Animation idleAnimation;
     Animation runAnimation;
+    Animation jumpUpAnimation;
+    Animation jumpDownAnimation;
+    Animation hurtAnimation;
+    Animation slideAnimation;
+    Animation glideAnimation;
+    Animation grabAnimation;
 
     float landMaxSpeed;                     ///< Max speed on land (pixels per second).
     float landAcceleration;                 ///< Land acceleration (pixels per second).
@@ -62,6 +70,7 @@ public:
     raylib::Vector2 wallKickSustainGravity; ///< Gravity and deceleration applied during wallKickAccelerationTime.
     float jumpButtonActiveTime;             ///< Jump button is considered pressed for this amount of time after initial press (even if not held any more).
     raylib::Rectangle hitbox;               ///< Hitbox of the player.
+    raylib::Vector2 cameraWindow;           ///< Fractions of the screen palyer must be in, unless level border doesn't allow it. @todo Should be in Game, but no time...
 
     float jumpButtonLastPressTime = -10.0f; ///< Time when user last pressed jump button.
     float jumpStartTime = -10.0f;           ///< Time when user started jumping/wall_kicking.
@@ -79,11 +88,37 @@ public:
         : game(game)
         , jumpSfx("Sounds/663831__efindlay__springy-jump.wav")
     {
+        idleAnimation.load("Graphics/Player/player-idle.json");
         runAnimation.load("Graphics/Player/player-run.json");
+        jumpUpAnimation.load("Graphics/Player/player-jump-up.json");
+        jumpDownAnimation.load("Graphics/Player/player-jump-down.json");
+        hurtAnimation.load("Graphics/Player/player-hurt.json");
+        slideAnimation.load("Graphics/Player/player-slide.json");
+        glideAnimation.load("Graphics/Player/player-glide.json");
+        grabAnimation.load("Graphics/Player/player-grab.json");
         load();
     }
 
-    void collisionDetection();
+    void setInitialState(raylib::Vector2 initialPosition) {
+        state = PlayerState::GROUNDED;
+        position = initialPosition;
+        velocity = raylib::Vector2::Zero();
+        facingDirection = 1;
+        animTime = 0.0f;
+        currentAnimation = &idleAnimation;
+
+        jumpButtonLastPressTime = -10.0f;
+        jumpStartTime = -10.0f;
+
+        wallKickDirection = -1;
+        grabDirection = -1;
+
+        jumpButtonBlocked = false;
+        jumpButtonOwned = false;
+    }
+
     void update();
+    void step(float timeDelta);
+    void draw();
     void load();
 };

@@ -1,0 +1,14 @@
+{
+    "music": "../Music/platformer_level03.mp3",
+    "musicVolume": 0.1,
+    "animations": [
+        {
+            "position": { "x":  0, "y":  0 }
+            "image": "LevelEndScreen.png"
+        },
+        {
+            "position": { "x":  648, "y":  451 }
+            "animation": "../Graphics/Player/player-run.json",
+        }
+    ]
+}

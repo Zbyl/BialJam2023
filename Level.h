@@ -1,5 +1,7 @@
 #pragma once
 
+#include "Collectible.h"
+
 #include "zerrors.h"
 
 #include "raylib-cpp.hpp"
@@ -15,12 +17,14 @@ class Game;
 enum class TileType {
     EMPTY = 0,
     WALL = 1,
+    LAVA = 2,
 };
 
 inline bool isCollider(TileType tile) {
     switch (tile) {
         case TileType::EMPTY: return false;
         case TileType::WALL: return true;
+        case TileType::LAVA: return true;
     }
     ZASSERT(false);
 }
@@ -32,17 +36,23 @@ private:
 public:
     raylib::Music music;
 
-private:
+public:
     int tileSize = 16;      ///< Tiles are squares of this size.
     int levelWidth;         ///< Width of the level in pixels. Multiples of tileSize.
     int levelHeight;        ///< Width of the level in pixels. Multiples of tileSize.
+
+private:
     std::vector<raylib::Texture2D> backgrounds; ///< Level images drawn before entities.
     std::vector<raylib::Texture2D> foregrounds; ///< Level images drawn after entities.
     std::vector<raylib::Texture2D> paralaxLayers;
     std::vector<raylib::Vector2> paralaxScales;
     std::vector<int8_t> levelData; ///< Level data, where top-left tile is first, bottom-right is last.
 
+    std::vector<Collectible> collectibles;
+
+public:
     raylib::Vector2 playerStartPosition = { 0.0f, 0.0f };
+    raylib::Rectangle levelExit = { 0.0f, 0.0f, 0.0f };
 
 public:
     Level(Game& game) : game(game) {}
@@ -50,6 +60,7 @@ public:
     void load(const std::string& levelFile);
 
     void startLevel();
+    void endLevel();
 
     void drawBackground();
     void update();
@@ -58,4 +69,7 @@ public:
     std::optional<TileType> getTileWorld(raylib::Vector2 worldPosition) const;
 
     std::tuple<bool, bool, bool, int, raylib::Vector2> collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity);
+
+    /// @returns [ collectedCount, totalCount ]
+    std::tuple<int, int> getCollectibleStats() const;
 };
