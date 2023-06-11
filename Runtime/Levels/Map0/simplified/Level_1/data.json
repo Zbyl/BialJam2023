@@ -363,10 +363,23 @@
 				"iid": "60b95157-ed50-11ed-aae4-634181a0b4f9",
 				"layer": "Entities",
 				"x": 2386,
-				"y": 485,
+				"y": 488,
 				"width": 30,
 				"height": 50,
 				"color": 39387,
+				"customFields" : {}
+			}
+		],
+		"ExitDoor": [
+			{
+				"id": "ExitDoor",
+				"iid": "967c6320-ed50-11ed-aae4-b552b8f24c10",
+				"layer": "Entities",
+				"x": 2391,
+				"y": 520,
+				"width": 22,
+				"height": 48,
+				"color": 12470831,
 				"customFields" : {}
 			}
 		]

@@ -215,11 +215,24 @@
 				"id": "Exit",
 				"iid": "ddaf0b90-ed50-11ed-aae4-7d2036fb0c74",
 				"layer": "Entities",
-				"x": 2400,
-				"y": 1149,
+				"x": 2403,
+				"y": 1144,
 				"width": 30,
 				"height": 50,
 				"color": 39387,
+				"customFields" : {}
+			}
+		],
+		"ExitDoor": [
+			{
+				"id": "ExitDoor",
+				"iid": "b4f26430-ed50-11ed-aae4-6927d6a519dc",
+				"layer": "Entities",
+				"x": 2407,
+				"y": 1177,
+				"width": 22,
+				"height": 48,
+				"color": 12470831,
 				"customFields" : {}
 			}
 		]

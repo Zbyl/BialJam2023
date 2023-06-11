@@ -32,6 +32,11 @@ std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > Animation::spr
 
 
 void Animation::load(const std::string& animFile) {
+    images.clear();
+    origins.clear();
+    sounds.clear();
+    delays.clear();
+
     auto jsonText = loadTextFile(animFile);
 
     auto json = nlohmann::json::parse(jsonText);

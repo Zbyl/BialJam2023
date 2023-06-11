@@ -14,6 +14,9 @@
 void Player::update() {
     animTime += game.levelTimeDelta;
 
+    if (playerDead)
+        return;
+
     auto steps = 20.0f;
     auto timeDelta = game.levelTimeDelta / steps;
     for (int i = 0; i < steps; ++i) {
@@ -223,6 +226,16 @@ void Player::step(float timeDelta) {
 }
 
 void Player::draw() {
+    if (playerDead) {
+        if (!playerHide) {
+            auto [origin, image, sound] = actuallyDead ? hurtAnimation.spriteForTime(animTime) : idleAnimation.spriteForTime(animTime);
+            if (sound)
+                sound->Play();
+            game.drawSprite(position, image, origin, facingDirection == -1);
+        }
+        return;
+    }
+
     auto [origin, image, sound] = currentAnimation->spriteForTime(animTime);
     if (sound)
         sound->Play();
@@ -260,4 +273,13 @@ void Player::load() {
     hitbox = raylib::Rectangle{ json["hitbox"]["x"].get<float>(), json["hitbox"]["y"].get<float>(), json["hitbox"]["width"].get<float>(), json["hitbox"]["height"].get<float>() };
 
     cameraWindow = loadJsonRect(json["cameraWindow"]);
+}
+
+void Player::setPlayerDead(bool dead) {
+    playerDead = true;
+    actuallyDead = dead;
+    if (!dead) {
+        position = game.level.levelExitDoor.GetPosition();
+        position.x += game.level.levelExitDoor.width / 2;
+    }
 }

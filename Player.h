@@ -81,6 +81,10 @@ public:
     bool jumpButtonBlocked = false;         ///< Used to disable reacting to a held jump button.
     bool jumpButtonOwned = false;           ///< Used to mark that this press of jump button was already "used". Different from jumpButtonBlocked because of jumpButtonActiveTime. @todo Maybe clean up.
 
+    bool playerDead = false;
+    bool actuallyDead = false;
+    bool playerHide = false;
+
     raylib::Sound jumpSfx;
     raylib::Sound groundSfx;
 
@@ -117,7 +121,13 @@ public:
 
         jumpButtonBlocked = false;
         jumpButtonOwned = false;
+
+        playerDead = false;
+        actuallyDead = false;
+        playerHide = false;
     }
+
+    void setPlayerDead(bool dead);
 
     void update();
     void step(float timeDelta);

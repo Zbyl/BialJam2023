@@ -17,6 +17,9 @@
 
 
 void Level::load(const std::string& levelFile) {
+    exitDoorAnimation.load("Graphics/Door/door-open-close.json"); // Here so that we can iterate on it more easily, as it reloads.
+    exitDoorAnimation.loop = false;
+
     backgrounds.clear();
     foregrounds.clear();
     paralaxLayers.clear();
@@ -30,6 +33,7 @@ void Level::load(const std::string& levelFile) {
     auto basePath = std::filesystem::path(levelFile).parent_path();
 
     tileSize = json["tileSize"].get<int>();
+    extraLevelEndDelay = json["extraLevelEndDelay"].get<float>();
 
     auto musicPath = json["music"].get<std::string>();
     auto musicVolume = json["musicVolume"].get<float>();
@@ -69,6 +73,7 @@ void Level::load(const std::string& levelFile) {
 
     playerStartPosition = loadJsonRect(ldtkData["entities"]["PlayerStart"][0]).GetPosition();
     levelExit = loadJsonRect(ldtkData["entities"]["Exit"][0]);
+    levelExitDoor = loadJsonRect(ldtkData["entities"]["ExitDoor"][0]);
 
     for (const auto& collectible : ldtkData["entities"]["Collectible"]) {
         collectibles.emplace_back(game.collectiblePrefab);
@@ -95,6 +100,10 @@ void Level::startLevel() {
     music.Seek(0);
     music.Play();
     game.player.setInitialState(playerStartPosition);
+
+    levelEnding = false;
+    levelEndingStartTime = 0.0f;
+    levelEndingByDeath = false;
 }
 
 void Level::endLevel() {
@@ -114,6 +123,18 @@ void Level::drawBackground() {
 
     for (int i = 0; i < std::ssize(backgrounds); ++i) {
         backgrounds[i].Draw(game.worldToScreen({ 0.0f, 0.0f }));
+    }
+
+    if (levelEnding && !levelEndingByDeath) {
+        auto animTime = game.levelTime - levelEndingStartTime;
+        if (animTime > exitDoorAnimation.getAnimationLength() / 2) {
+            // Hack
+            game.player.playerHide = true;
+        }
+        auto [origin, image, sound] = exitDoorAnimation.spriteForTime(animTime);
+        if (sound)
+            sound->Play();
+        game.drawSprite(levelExitDoor.GetPosition(), image, origin, false);
     }
 }
 
@@ -308,4 +329,19 @@ std::tuple<int, int> Level::getCollectibleStats() const {
         if (!collectible.forHud) totalCount++;
     }
     return { collectedCount, totalCount };
+}
+
+void Level::setLevelEnding(bool death) {
+    if (levelEnding) return;
+    levelEnding = true;
+    levelEndingStartTime = game.levelTime;
+    levelEndingByDeath = death;
+}
+
+bool Level::hasLevelEnded() const {
+    if (!levelEnding) return false;
+    auto animTime = game.levelTime - levelEndingStartTime;
+    if (animTime > exitDoorAnimation.getAnimationLength() + extraLevelEndDelay)
+        return true;
+    return false;
 }

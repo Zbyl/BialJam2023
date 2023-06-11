@@ -11,7 +11,7 @@
 	"iid": "cc11cc60-ed50-11ed-aae4-9d580b4dd2b3",
 	"jsonVersion": "1.3.3",
 	"appBuildId": 467698,
-	"nextUid": 24,
+	"nextUid": 25,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -542,6 +542,39 @@
 			"pivotX": 0,
 			"pivotY": 0,
 			"fieldDefs": []
+		},
+		{
+			"identifier": "ExitDoor",
+			"uid": 24,
+			"tags": [],
+			"exportToToc": false,
+			"doc": null,
+			"width": 22,
+			"height": 48,
+			"resizableX": false,
+			"resizableY": false,
+			"minWidth": null,
+			"maxWidth": null,
+			"minHeight": null,
+			"maxHeight": null,
+			"keepAspectRatio": false,
+			"tileOpacity": 1,
+			"fillOpacity": 1,
+			"lineOpacity": 1,
+			"hollow": false,
+			"color": "#BE4A2F",
+			"renderMode": "Rectangle",
+			"showName": true,
+			"tilesetId": null,
+			"tileRenderMode": "FitInside",
+			"tileRect": null,
+			"nineSliceBorders": [],
+			"maxCount": 0,
+			"limitScope": "PerLevel",
+			"limitBehavior": "MoveLastOne",
+			"pivotX": 0,
+			"pivotY": 1,
+			"fieldDefs": []
 		}
 	], "tilesets": [
 		{
@@ -984,7 +1017,7 @@
 						},
 						{
 							"__identifier": "Exit",
-							"__grid": [2400,1149],
+							"__grid": [2403,1144],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
@@ -993,7 +1026,7 @@
 							"width": 30,
 							"height": 50,
 							"defUid": 18,
-							"px": [2400,1149],
+							"px": [2403,1144],
 							"fieldInstances": []
 						},
 						{
@@ -1176,6 +1209,20 @@
 							"height": 16,
 							"defUid": 17,
 							"px": [1035,1278],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "ExitDoor",
+							"__grid": [2407,1176],
+							"__pivot": [0,1],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "b4f26430-ed50-11ed-aae4-6927d6a519dc",
+							"width": 22,
+							"height": 48,
+							"defUid": 24,
+							"px": [2407,1177],
 							"fieldInstances": []
 						}
 					]
@@ -4801,7 +4848,7 @@
 						},
 						{
 							"__identifier": "Exit",
-							"__grid": [2417,950],
+							"__grid": [2419,951],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
@@ -4810,7 +4857,7 @@
 							"width": 30,
 							"height": 50,
 							"defUid": 18,
-							"px": [2417,950],
+							"px": [2419,951],
 							"fieldInstances": []
 						},
 						{
@@ -5231,6 +5278,20 @@
 							"height": 16,
 							"defUid": 17,
 							"px": [679,923],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "ExitDoor",
+							"__grid": [2423,983],
+							"__pivot": [0,1],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "83503ec0-ed50-11ed-aae4-fbbf3aad42db",
+							"width": 22,
+							"height": 48,
+							"defUid": 24,
+							"px": [2423,984],
 							"fieldInstances": []
 						}
 					]
@@ -10696,7 +10757,7 @@
 						},
 						{
 							"__identifier": "Exit",
-							"__grid": [2386,485],
+							"__grid": [2386,488],
 							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": null,
@@ -10705,7 +10766,7 @@
 							"width": 30,
 							"height": 50,
 							"defUid": 18,
-							"px": [2386,485],
+							"px": [2386,488],
 							"fieldInstances": []
 						},
 						{
@@ -11070,6 +11131,20 @@
 							"height": 16,
 							"defUid": 17,
 							"px": [1353,335],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "ExitDoor",
+							"__grid": [2391,519],
+							"__pivot": [0,1],
+							"__tags": [],
+							"__tile": null,
+							"__smartColor": "#BE4A2F",
+							"iid": "967c6320-ed50-11ed-aae4-b552b8f24c10",
+							"width": 22,
+							"height": 48,
+							"defUid": 24,
+							"px": [2391,520],
 							"fieldInstances": []
 						}
 					]

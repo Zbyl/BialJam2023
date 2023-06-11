@@ -1,0 +1,59 @@
+[
+    {
+        "image": "door-1.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1,
+        "sound": "../../Sounds/door-squeak.wav"
+    },
+    {
+        "image": "door-2.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-3.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-4.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-5.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-6.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-5.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-4.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-3.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1,
+        "sound": "../../Sounds/door-close.wav"
+    },
+    {
+        "image": "door-2.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    },
+    {
+        "image": "door-1.png",
+        "origin": { "x":  0, "y":  47 },
+        "delay": 0.1
+    }
+]

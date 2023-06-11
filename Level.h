@@ -55,7 +55,14 @@ private:
 
 public:
     raylib::Vector2 playerStartPosition = { 0.0f, 0.0f };
-    raylib::Rectangle levelExit = { 0.0f, 0.0f, 0.0f };
+    raylib::Rectangle levelExit = { 0.0f, 0.0f, 0.0f, 0.0f };
+    raylib::Rectangle levelExitDoor = { 0.0f, 0.0f, 0.0f, 0.0f };
+
+    bool levelEnding = false;           ///< True if level end sequence plays.
+    float levelEndingStartTime = 0.0f;  ///< When level ending started.
+    float extraLevelEndDelay = 0.0f;
+    bool levelEndingByDeath = false;
+    Animation exitDoorAnimation;
 
 public:
     Level(Game& game) : game(game) {}
@@ -63,6 +70,9 @@ public:
     void load(const std::string& levelFile);
 
     void startLevel();
+    void setLevelEnding(bool death);
+    bool isLevelEnding() const { return levelEnding; }
+    bool hasLevelEnded() const;
     void endLevel();
 
     void drawBackground();

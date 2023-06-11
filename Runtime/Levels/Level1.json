@@ -1,5 +1,6 @@
 {
     "tileSize": 16,
+    "extraLevelEndDelay": 1.0,
     "ldtkMap": "Map0/simplified/Level_1",
     "music": "../Music/Oniku Loop2.wav",
     "musicVolume": 0.5,

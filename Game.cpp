@@ -125,6 +125,8 @@ void Game::mainLoop()
 
     restartGame();
 
+    bool endLevelByDeath = false;
+
     // Main game loop, detect window close button, ESC key or programmatic quit.
     while (!window.ShouldClose() && !shouldQuit)
     {
@@ -171,13 +173,23 @@ void Game::mainLoop()
 
                 drawHud(false);
 
-                if (level.levelExit.CheckCollision(player.position))
-                    endLevel(false);
+                if (level.levelExit.CheckCollision(player.position)) {
+                    endLevelByDeath = false;
+                    level.setLevelEnding(false);
+                    player.setPlayerDead(false);
+                }
 
                 if (player.state == PlayerState::GROUNDED) {
                     auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2)).value_or(TileType::EMPTY);
-                    if (playerTile == TileType::LAVA)
-                        endLevel(true);
+                    if (playerTile == TileType::LAVA) {
+                        endLevelByDeath = true;
+                        level.setLevelEnding(true);
+                        player.setPlayerDead(true);
+                    }
+                }
+
+                if (level.hasLevelEnded()) {
+                    endLevel(endLevelByDeath);
                 }
             }
             else {
