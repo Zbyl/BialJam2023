@@ -16,9 +16,13 @@ private:
     bool yaxisBlocked = false;  // We block Y axis after input to avoid registering continuous presses.
 
     raylib::Rectangle menuRectangle = { 0.0f, 0.0f, 1000.0f, 500.0f };
+    raylib::Font futharkFont;
 
 public:
-    Menu(Game& game) : game(game) {}
+    bool useFuthark = false;
+
+public:
+    Menu(Game& game) : game(game), futharkFont("Graphics/Fonts/pixelder_futhark.png") {}
 
     bool isInMenu() const { return inMenu; }
     void setInMenu(bool inMenu) { this->inMenu = inMenu; focusedItem = 0; }

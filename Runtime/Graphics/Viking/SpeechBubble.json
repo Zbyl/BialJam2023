@@ -1,0 +1,13 @@
+[
+    {
+        "image": "SpeechBubble.png",
+        "origin": { "x":  8, "y":  49 },
+        "delay": 0.1,
+        "sound": "../../Sounds/256860__kodack__fucking-hell-swedish.wav"
+    },
+    {
+        "image": "SpeechBubble.png",
+        "origin": { "x":  8, "y":  49 },
+        "delay": 0.1
+    }
+]

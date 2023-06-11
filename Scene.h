@@ -27,16 +27,12 @@ public:
     raylib::Rectangle menuRectangle = { 0.0f, 0.0f, 1000.0f, 500.0f };
 
 public:
-    Scene(Game& game, const std::string& sceneFile)
-        : game(game)
-    {
-        load(sceneFile);
-    }
+    Scene(Game& game) : game(game) {}
 
-    void startScene();
+    void startScene(bool forReload = false);
     void endScene();
 
     bool areAnimationsFinished() const;
     void update();
-    void load(const std::string& sceneFile);
+    void load(const std::string& sceneFile, bool useFuthark, bool reloadHack);
 };

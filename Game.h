@@ -68,13 +68,14 @@ public:
         , collectiblePrefab(*this)
         , hudCollectible(collectiblePrefab)
         , hudFont("Graphics/Fonts/jupiter_crash.png")
-        , startScreen(*this, "Scenes/StartScreen.json")
-        , deadScreen(*this, "Scenes/DeadScreen.json")
-        , levelEndScreen(*this, "Scenes/LevelEndScreen.json")
-        , gameEndScreen(*this, "Scenes/GameEndScreen.json")
+        , startScreen(*this)
+        , deadScreen(*this)
+        , levelEndScreen(*this)
+        , gameEndScreen(*this)
     {
         SetTargetFPS(60); // Set our game to run at 60 frames-per-second
         hudCollectible.forHud = true;
+        reloadScenes(menu.useFuthark, false);
     }
 
     void mainLoop();
@@ -90,4 +91,6 @@ public:
     void restartGame();
     void startLevel(int levelIndex);
     void endLevel(bool died);
+
+    void reloadScenes(bool useFuthark, bool reloadHack);
 };

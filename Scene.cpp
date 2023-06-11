@@ -13,23 +13,42 @@
 #include <numeric>
 
 
-void Scene::startScene() {
+void Scene::startScene(bool forReload) {
     game.menu.setMenuRectangle(menuRectangle);
     animTime = 0.0f;
-    music.Seek(0);
-    music.Play();
+    if (!forReload) {
+        music.Seek(0);
+        music.Play();
+    }
 }
 
 void Scene::endScene() {
     music.Stop();
 }
 
-void Scene::load(const std::string& sceneFile) {
+void Scene::load(const std::string& sceneFile, bool useFuthark, bool reloadHack) {
     auto jsonText = loadTextFile(sceneFile);
 
     auto json = nlohmann::json::parse(jsonText);
 
     auto basePath = std::filesystem::path(sceneFile).parent_path();
+
+    if (reloadHack) // Make loading faster!
+    {
+        auto imagePath = json["animations"][0]["image"].get<std::string>();
+        auto imPath = (basePath / imagePath).string();
+        if (useFuthark) {
+            size_t start_pos = imPath.find(".png");
+            imPath.replace(start_pos, 0, "-vr");
+        }
+        animations[0].fromPicture(imPath);
+        return;
+    }
+
+    animations.clear();
+    positions.clear();
+    delays.clear();
+
 
     auto musicPath = json["music"].get<std::string>();
     auto musicVolume = json["musicVolume"].get<float>();
@@ -55,7 +74,12 @@ void Scene::load(const std::string& sceneFile) {
         if (animation.contains("image")) {
             auto imagePath = animation["image"].get<std::string>();
             animations.emplace_back();
-            animations.back().fromPicture((basePath / imagePath).string());
+            auto imPath = (basePath / imagePath).string();
+            if (useFuthark) {
+                size_t start_pos = imPath.find(".png");
+                imPath.replace(start_pos, 0, "-vr");
+            }
+            animations.back().fromPicture(imPath);
         }
         else {
             auto animationPath = animation["animation"].get<std::string>();

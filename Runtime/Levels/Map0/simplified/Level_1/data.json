@@ -382,6 +382,32 @@
 				"color": 12470831,
 				"customFields" : {}
 			}
+		],
+		"Futhark": [
+			{
+				"id": "Futhark",
+				"iid": "b53fe950-ed50-11ed-aae4-3d89a047e086",
+				"layer": "Entities",
+				"x": 2329,
+				"y": 463,
+				"width": 56,
+				"height": 50,
+				"color": 16711680,
+				"customFields" : {}
+			}
+		],
+		"FurharkTrigger": [
+			{
+				"id": "FurharkTrigger",
+				"iid": "1c887e60-ed50-11ed-aae4-0b485168798c",
+				"layer": "Entities",
+				"x": 2049,
+				"y": 205,
+				"width": 450,
+				"height": 350,
+				"color": 2943221,
+				"customFields" : {}
+			}
 		]
 	}
 }

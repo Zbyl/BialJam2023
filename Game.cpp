@@ -179,6 +179,10 @@ void Game::mainLoop()
                     player.setPlayerDead(false);
                 }
 
+                if (level.furharkTrigger.CheckCollision(player.position)) {
+                    level.setShowFuthark();
+                }
+
                 if (player.state == PlayerState::GROUNDED) {
                     auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2)).value_or(TileType::EMPTY);
                     if (playerTile == TileType::LAVA) {
@@ -368,4 +372,12 @@ void gamepadTest()
         DrawText(TextFormat("DETECTED BUTTON: %i", GetGamepadButtonPressed()), 10, 430, 10, RED);
     else
         DrawText("DETECTED BUTTON: NONE", 10, 430, 10, GRAY);
+}
+
+void Game::reloadScenes(bool useFuthark, bool reloadHack) {
+    startScreen.load("Scenes/StartScreen.json", useFuthark, reloadHack);
+    deadScreen.load("Scenes/DeadScreen.json", useFuthark, reloadHack);
+    levelEndScreen.load("Scenes/LevelEndScreen.json", useFuthark, reloadHack);
+    gameEndScreen.load("Scenes/GameEndScreen.json", useFuthark, reloadHack);
+    startScreen.startScene(reloadHack); // @hack
 }

@@ -26,7 +26,13 @@ void Menu::draw() {
         return;
     }
 
-    float buttonWidth = 125;
+    if (useFuthark) {
+        GuiSetFont(futharkFont);
+    } else {
+        GuiSetFont(GetFontDefault());
+    }
+
+    float buttonWidth = 140;
     float buttonX = menuRectangle.x + (menuRectangle.width - buttonWidth) / 2;
     auto yPosition = menuRectangle.y;
 
@@ -71,6 +77,13 @@ void Menu::draw() {
         [=, this]() { game.window.ToggleFullscreen(); },
     });
     addItem({
+        [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_GEAR_BIG, useFuthark ? "To English" : "To Futhark")); },
+        [=, this]() {
+            useFuthark = !useFuthark;
+            game.reloadScenes(useFuthark, true);
+        },
+        });
+    addItem({
         [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_EXIT, "Quit")); },
         [=, this]() { game.shouldQuit = true; },
     });
@@ -105,3 +118,4 @@ void Menu::draw() {
         actionFunc();
     }
 }
+

@@ -71,6 +71,11 @@ void Animation::load(const std::string& animFile) {
 }
 
 void Animation::fromPicture(const std::string& imageFile, float length) {
+    images.clear();
+    origins.clear();
+    sounds.clear();
+    delays.clear();
+
     images.emplace_back(imageFile);
     sounds.emplace_back();
     origins.emplace_back(0.0f, 0.0f);

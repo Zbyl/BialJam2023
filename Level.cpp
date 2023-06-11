@@ -19,6 +19,8 @@
 void Level::load(const std::string& levelFile) {
     exitDoorAnimation.load("Graphics/Door/door-open-close.json"); // Here so that we can iterate on it more easily, as it reloads.
     exitDoorAnimation.loop = false;
+    futharkAnimation.load("Graphics/Viking/SpeechBubble.json"); // Here so that we can iterate on it more easily, as it reloads.
+    futharkAnimation.loop = false;
 
     backgrounds.clear();
     foregrounds.clear();
@@ -74,6 +76,8 @@ void Level::load(const std::string& levelFile) {
     playerStartPosition = loadJsonRect(ldtkData["entities"]["PlayerStart"][0]).GetPosition();
     levelExit = loadJsonRect(ldtkData["entities"]["Exit"][0]);
     levelExitDoor = loadJsonRect(ldtkData["entities"]["ExitDoor"][0]);
+    furharkBubble = loadJsonRect(ldtkData["entities"]["Futhark"][0]);
+    furharkTrigger = loadJsonRect(ldtkData["entities"]["FurharkTrigger"][0]);
 
     for (const auto& collectible : ldtkData["entities"]["Collectible"]) {
         collectibles.emplace_back(game.collectiblePrefab);
@@ -100,6 +104,9 @@ void Level::startLevel() {
     music.Seek(0);
     music.Play();
     game.player.setInitialState(playerStartPosition);
+
+    showFuthark = false;
+    showFutharkStartTime = 0.0f;
 
     levelEnding = false;
     levelEndingStartTime = 0.0f;
@@ -135,6 +142,17 @@ void Level::drawBackground() {
         if (sound)
             sound->Play();
         game.drawSprite(levelExitDoor.GetPosition(), image, origin, false);
+    }
+
+    if (showFuthark) {
+        auto animTime = game.levelTime - showFutharkStartTime;
+        if (animTime >= futharkAnimation.getAnimationLength()) {
+            animTime = futharkAnimation.getAnimationLength() - 0.01f;
+        }
+        auto [origin, image, sound] = futharkAnimation.spriteForTime(animTime);
+        if (sound)
+            sound->Play();
+        game.drawSprite(furharkBubble.GetPosition(), image, origin, false);
     }
 }
 
@@ -329,6 +347,12 @@ std::tuple<int, int> Level::getCollectibleStats() const {
         if (!collectible.forHud) totalCount++;
     }
     return { collectedCount, totalCount };
+}
+
+void Level::setShowFuthark() {
+    if (showFuthark) return;
+    showFuthark = true;
+    showFutharkStartTime = game.levelTime;
 }
 
 void Level::setLevelEnding(bool death) {
