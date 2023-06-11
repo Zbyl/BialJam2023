@@ -1,4 +1,6 @@
-#include "game.h"
+#include "Game.h"
+
+#include "Utilities.h"
 
 #include "zstr.h"
 
@@ -24,15 +26,20 @@ void Game::drawHud(bool withTotals) {
         auto startX = 100.0f;
         auto startY = 250.0f;
         auto [collectedCount, totalCount] = level.getCollectibleStats();
+
+        auto& futFont = menu.useFuthark ? menu.futharkFont : hudFont;
+
         hudCollectible.position = raylib::Vector2{ startX, startY };
         hudCollectible.update();
-        hudFont.DrawText((ZSTR() << collectedCount << " / " << totalCount << " w poziomie").str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        hudFont.DrawText((ZSTR() << collectedCount << " / " << totalCount).str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        futFont.DrawText(toUpperEx(menu.useFuthark, "w poziomie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
 
         startX = 930.0f;
         startY = 250.0f;
         hudCollectible.position = raylib::Vector2{ startX, startY };
         hudCollectible.update();
-        hudFont.DrawText((ZSTR() << totalCollected << " / " << totalAvailable << " w sumie").str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        hudFont.DrawText((ZSTR() << totalCollected << " / " << totalAvailable).str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        futFont.DrawText(toUpperEx(menu.useFuthark, "w sumie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
     }
 }
 

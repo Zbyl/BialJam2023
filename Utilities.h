@@ -27,3 +27,5 @@ std::tuple<int, float> divide(float value, float divisor);
 raylib::Rectangle loadJsonRect(const nlohmann::json& json);
 
 void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest, Vector2 origin = {0.0f, 0.0f}, float rotation = 0.0f, float scale = 1.0f, Color tint = WHITE);
+
+std::string toUpperEx(bool upper, std::string text);

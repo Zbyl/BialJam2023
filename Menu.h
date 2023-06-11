@@ -16,6 +16,8 @@ private:
     bool yaxisBlocked = false;  // We block Y axis after input to avoid registering continuous presses.
 
     raylib::Rectangle menuRectangle = { 0.0f, 0.0f, 1000.0f, 500.0f };
+
+public:
     raylib::Font futharkFont;
 
 public:

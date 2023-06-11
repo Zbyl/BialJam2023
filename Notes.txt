@@ -27,3 +27,16 @@ Notes:
 - Graphics: https://ansimuz.itch.io/sunny-land-pixel-game-art
 - Jump: https://freesound.org/people/EFindlay/sounds/663831/
 - JUPITER_CRASH FONT designed by Brian Kent (AEnigma)
+
+TODO:
+
+
+
+Collision detection
+Fix Camera Window
+
+collectible should take player hitbox into consideration.
+sounds in menu
+
+More punchy end level screen
+

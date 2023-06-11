@@ -131,3 +131,12 @@ void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest, Vecto
         }
     }
 }
+
+std::string toUpperEx(bool upper, std::string text) {
+    if (!upper) return text;
+
+    for (auto& c : text)
+        c = std::toupper(c);
+    return text;
+}
+

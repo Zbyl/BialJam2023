@@ -22,17 +22,23 @@ void Collectible::update() {
         return;
     }
 
-    raylib::Rectangle collectibleRect { position + collectiblePrefab.hitbox.GetPosition(), collectiblePrefab.hitbox.GetSize() };
-    raylib::Rectangle playerRect { collectiblePrefab.game.player.position + collectiblePrefab.game.player.hitbox.GetPosition(), collectiblePrefab.game.player.hitbox.GetSize() };
-    if (!forHud && playerRect.CheckCollision(collectibleRect)) {
+    animTime += collectiblePrefab.game.levelTimeDelta;
+
+    auto [origin, image, sound] = collectiblePrefab.wiggleAnimation.spriteForTime(animTime);
+
+    raylib::Rectangle collectibleRect { position - origin + collectiblePrefab.hitbox.GetPosition(), collectiblePrefab.hitbox.GetSize() };
+
+    //auto hitBoxPosition = collectiblePrefab.game.worldToScreen(collectibleRect.GetPosition());
+    //DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, collectibleRect.GetWidth(), collectibleRect.GetHeight(), GREEN);
+
+    //auto [playerOrigin, playerImage, playerSound] = collectiblePrefab.game.player.runAnimation.spriteForTime(0.0f);
+    //raylib::Rectangle playerRect { collectiblePrefab.game.player.position - playerOrigin + collectiblePrefab.game.player.hitbox.GetPosition(), collectiblePrefab.game.player.hitbox.GetSize() };
+    if (!forHud && collectibleRect.CheckCollision(collectiblePrefab.game.player.position)) {
         collected = true;
         collectiblePrefab.collectSfx.Play();
         return;
     }
 
-    animTime += collectiblePrefab.game.levelTimeDelta;
-
-    auto [origin, image, sound] = collectiblePrefab.wiggleAnimation.spriteForTime(animTime);
     if (sound)
         sound->Play();
     if (forHud)
