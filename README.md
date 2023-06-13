@@ -85,14 +85,17 @@ Official guide is in raylib README.md.
 
 # Used assets
 
-TODO...
-
-- Graphics: https://ansimuz.itch.io/sunny-land-pixel-game-art
-- JUPITER_CRASH FONT designed by Brian Kent (AEnigma)
-
-Tilesets:
-https://itch.io/game-assets/tag-tileset
-https://adamatomic.itch.io/gallet-city
+- Graphics and Music: https://ansimuz.itch.io/sunny-land-pixel-game-art
+- Graphics (Viking): https://pitiit.itch.io/free-2d-fantasy-platformer-asset-pack
+- JUPITER_CRASH FONT designed by Brian Kent (AEnigma), and other fonts from Raylib.
+- Music from Pixabay (free to use):
+    - https://pixabay.com/music/acid-jazz-dramatic-music-hip-hop-background-jazz-music-beat-black-amp-white-148451/
+    - https://pixabay.com/music/upbeat-catch-it-117676/
+    - https://pixabay.com/pl/music/muzyka-pop-focus-152819/
+    - https://pixabay.com/pl/music/grupa-akustyczna-forest-lullaby-110624/
+    - https://pixabay.com/pl/music/zbiorowy-inspiring-chill-152901/
+- Music from DL Sounds:
+    - https://www.dl-sounds.com/royalty-free/oniku-loop2/
 
 
 # Todo
@@ -106,9 +109,9 @@ https://adamatomic.itch.io/gallet-city
 - Make fire animated.
 - Move from Raylib to SDL.
 - To futhark moves menu to start screen position.
-- In Web build A for starting level causes player to jump.
 
-# LDtk improvements
+
+# Possible LDtk improvements
 
 - separate AutoLayer doesn't work - rule wizard/editor? doesn't see the values from IntGrid
 - rule editor: add Wall OR OtherWall OR OtherSomething and NOT Something else.

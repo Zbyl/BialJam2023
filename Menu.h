@@ -24,7 +24,7 @@ public:
     bool useFuthark = false;
 
 public:
-    Menu(Game& game) : game(game), futharkFont("Graphics/Fonts/pixelder_futhark.png") {}
+    Menu(Game& game) : game(game), futharkFont("Graphics/Fonts/futhark.png") {}
 
     bool isInMenu() const { return inMenu; }
     void setInMenu(bool inMenu) { this->inMenu = inMenu; focusedItem = 0; }
