@@ -33,6 +33,12 @@ void Menu::draw() {
         GuiSetFont(GetFontDefault());
     }
 
+#if defined(PLATFORM_WEB)
+    bool webBuild = true;
+#else
+    bool webBuild = false;
+#endif
+
     float buttonWidth = 140;
     float buttonX = menuRectangle.x + (menuRectangle.width - buttonWidth) / 2;
     auto yPosition = menuRectangle.y;
@@ -73,10 +79,11 @@ void Menu::draw() {
             [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_TARGET_MOVE_FILL, toUpperEx(useFuthark, "Show controls").c_str())); },
             [=, this]() {},
         });
-    addItem({
-        [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_CURSOR_SCALE, toUpperEx(useFuthark, game.window.IsFullscreen() ? "Exit full screen" : "Full screen").c_str())); },
-        [=, this]() { game.window.ToggleFullscreen(); },
-    });
+    if (!webBuild)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_CURSOR_SCALE, toUpperEx(useFuthark, game.window.IsFullscreen() ? "Exit full screen" : "Full screen").c_str())); },
+            [=, this]() { game.window.ToggleFullscreen(); },
+        });
     addItem({
         [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_GEAR_BIG, toUpperEx(useFuthark, useFuthark ? "To English" : "To Futhark").c_str())); },
         [=, this]() {
@@ -84,10 +91,11 @@ void Menu::draw() {
             game.reloadScenes(useFuthark, true);
         },
         });
-    addItem({
-        [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_EXIT, toUpperEx(useFuthark, "Quit").c_str())); },
-        [=, this]() { game.shouldQuit = true; },
-    });
+    if (!webBuild)
+        addItem({
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_EXIT, toUpperEx(useFuthark, "Quit").c_str())); },
+            [=, this]() { game.shouldQuit = true; },
+        });
 
     auto numItems = static_cast<int>(std::ssize(items));
 

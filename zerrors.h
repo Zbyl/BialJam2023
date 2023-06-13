@@ -138,7 +138,7 @@ public:
 
     [[noreturn]] ~ThrowHelper() noexcept(false) {
         auto messageStr = message.str();
-        TraceLog(LOG_ERROR, "GenericException:");
+        TraceLog(LOG_ERROR, "Throwing GenericException:");
         TraceLog(LOG_ERROR, messageStr.c_str());
         exception << std::move(messageStr);
         throw exception;
