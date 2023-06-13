@@ -10,12 +10,12 @@
         {
             "image": "../Graphics/Backgrounds/sea.png",
             "scale": { "x":  0.5, "y":  0.05 },
-            "paralaxHaxxorOffset": 650
+            "paralaxHaxxorOffset": 234
         },
         {
             "image": "../Graphics/Backgrounds/trees.png",
             "scale": { "x":  0.8, "y":  0.2 },
-            "paralaxHaxxorOffset": 500
+            "paralaxHaxxorOffset": 84
         }
     ]
 }
