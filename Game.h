@@ -5,8 +5,10 @@
 #include "Level.h"
 #include "Collectible.h"
 #include "Scene.h"
+#include "ResourceCache.h"
 
 #include "raylib-cpp.hpp"
+
 
 enum class GameState {
     START_SCREEN,
@@ -30,6 +32,8 @@ inline std::string to_string(GameState state) {
 class Game
 {
 public:
+    ResourceCache resourceCache;    ///< We want to destroy it last, so we need to put it first.
+
     const int screenWidth = 1280;
     const int screenHeight = 720;
 
@@ -59,6 +63,9 @@ public:
     Scene levelEndScreen;
     Scene gameEndScreen;
 
+    bool debug = false;
+    bool endLevelByDeath = false;
+
 public:
     Game()
         : window(screenWidth, screenHeight, "Kunek Bogus")
@@ -73,11 +80,11 @@ public:
         , levelEndScreen(*this)
         , gameEndScreen(*this)
     {
-        SetTargetFPS(60); // Set our game to run at 60 frames-per-second
         hudCollectible.forHud = true;
         reloadScenes(menu.useFuthark, false);
     }
 
+    void drawFrame();
     void mainLoop();
 
     raylib::Vector2 worldToScreen(raylib::Vector2 worldPosition) const;

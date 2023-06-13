@@ -20,13 +20,7 @@ public:
     raylib::Sound collectSfx;
 
 public:
-    CollectiblePrefab(Game& game)
-        : game(game)
-        , collectSfx("Sounds/coin.wav")
-    {
-        wiggleAnimation.load("Graphics/Collectible/collectible-wiggle.json");
-        load();
-    }
+    CollectiblePrefab(Game& game);
 
     void load();
 };

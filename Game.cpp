@@ -123,93 +123,88 @@ void Game::endLevel(bool died) {
     }
 }
 
-void Game::mainLoop()
+void Game::drawFrame()
 {
-    bool debug = false;
+#if 0
     raylib::Vector2 hitboxVelocity = { 0, 0 };
     raylib::Rectangle hitbox = { 0, 0, 0, 0 };
     hitbox.SetPosition(player.position);
+#endif
 
-    restartGame();
 
-    bool endLevelByDeath = false;
-
-    // Main game loop, detect window close button, ESC key or programmatic quit.
-    while (!window.ShouldClose() && !shouldQuit)
-    {
-        if (debug) {
-            if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_LEFT)) {
-                player.state = PlayerState::GROUNDED;
-                player.position = level.playerStartPosition;
-                player.velocity = raylib::Vector2::Zero();
-                player.load();
-            }
+    if (debug) {
+        if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_LEFT)) {
+            player.state = PlayerState::GROUNDED;
+            player.position = level.playerStartPosition;
+            player.velocity = raylib::Vector2::Zero();
+            player.load();
         }
+    }
 
-        if (IsKeyPressed(KEY_SPACE))
-            debug = !debug;
+    if (IsKeyPressed(KEY_SPACE))
+        debug = !debug;
 
-        if (debug) {
-            if (IsKeyPressed(KEY_E))
-                endLevel(false);
-            if (IsKeyPressed(KEY_D))
-                endLevel(true);
-            if (IsKeyPressed(KEY_R))
-                restartGame();
-        }
+    if (debug) {
+        if (IsKeyPressed(KEY_E))
+            endLevel(false);
+        if (IsKeyPressed(KEY_D))
+            endLevel(true);
+        if (IsKeyPressed(KEY_R))
+            restartGame();
+    }
 
-        BeginDrawing();
-        window.ClearBackground(RAYWHITE);
+    BeginDrawing();
+    window.ClearBackground(RAYWHITE);
 
-        menu.update();
+    menu.update();
 
-        bool hackDisableMenuUpdate = false;
+    bool hackDisableMenuUpdate = false;
 
-        if (gameState == GameState::LEVEL) {
-            if (!menu.isInMenu())
-            {
-                levelTimeDelta = window.GetFrameTime();
-                levelTime += window.GetFrameTime();
+    if (gameState == GameState::LEVEL) {
+        if (!menu.isInMenu())
+        {
+            levelTimeDelta = window.GetFrameTime();
+            levelTime += window.GetFrameTime();
 
-                player.update();
-                cameraUpdate();
+            player.update();
+            cameraUpdate();
 
-                level.drawBackground();
-                player.draw();
-                level.update();
+            level.drawBackground();
+            player.draw();
+            level.update();
 
-                drawHud(false);
+            drawHud(false);
 
-                if (level.levelExit.CheckCollision(player.position)) {
-                    endLevelByDeath = false;
-                    level.setLevelEnding(false);
-                    player.setPlayerDead(false);
-                }
-
-                if (level.furharkTrigger.CheckCollision(player.position)) {
-                    level.setShowFuthark();
-                }
-
-                if (player.state == PlayerState::GROUNDED) {
-                    auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2.0f)).value_or(TileType::EMPTY);
-                    if (playerTile == TileType::LAVA) {
-                        endLevelByDeath = true;
-                        level.setLevelEnding(true);
-                        player.setPlayerDead(true);
-                    }
-                }
-
-                if (level.hasLevelEnded()) {
-                    endLevel(endLevelByDeath);
-                }
-            }
-            else {
-                levelTimeDelta = 0;
+            if (level.levelExit.CheckCollision(player.position)) {
+                endLevelByDeath = false;
+                level.setLevelEnding(false);
+                player.setPlayerDead(false);
             }
 
-            level.music.Update(); // We want to update music even if level update was not called.
+            if (level.furharkTrigger.CheckCollision(player.position)) {
+                level.setShowFuthark();
+            }
+
+            if (player.state == PlayerState::GROUNDED) {
+                auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2.0f)).value_or(TileType::EMPTY);
+                if (playerTile == TileType::LAVA) {
+                    endLevelByDeath = true;
+                    level.setLevelEnding(true);
+                    player.setPlayerDead(true);
+                }
+            }
+
+            if (level.hasLevelEnded()) {
+                endLevel(endLevelByDeath);
+            }
         }
-        else
+        else {
+            levelTimeDelta = 0;
+        }
+
+        level.music.Update(); // We want to update music even if level update was not called.
+    }
+    else
         if (gameState == GameState::START_SCREEN)
         {
             startScreen.update();
@@ -250,43 +245,54 @@ void Game::mainLoop()
             }
         }
 
-        if (!hackDisableMenuUpdate)
-            menu.draw();
+    if (!hackDisableMenuUpdate)
+        menu.draw();
 
-        if (debug) {
-            // Debug Camera Window
-            auto cameraScreenPosition = worldToScreen(cameraPosition);
-            raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
-            DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
+    if (debug) {
+        // Debug Camera Window
+        auto cameraScreenPosition = worldToScreen(cameraPosition);
+        raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
+        DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
 
-            // Debug HitBox
-            hitbox.SetSize(player.hitbox.GetSize());
-            if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_THUMB)) {
-                hitboxVelocity.x = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) * (gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_TRIGGER_1) ? 10.0f : 50.0f);
-                hitboxVelocity.y = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) * (gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_TRIGGER_1) ? 10.0f : 50.0f);
-            }
-            else {
-                hitbox.x += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X);
-                hitbox.y += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y);
-            }
-
-            auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = level.collisionDetection(hitbox, hitboxVelocity);
-            auto hitBoxPosition = worldToScreen(hitbox.GetPosition());
-            auto hitBoxCenter = worldToScreen(hitbox.GetPosition() + hitbox.GetSize() / 2);
-            auto arrowPoint = hitBoxCenter + hitboxVelocity;
-            DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), GREEN);
-            DrawLine(hitBoxCenter.x, hitBoxCenter.y, arrowPoint.x, arrowPoint.y, RED);
-            if (grounded) DrawText("GROUNDED", 10, 300, 10, BLACK);
-            if (touchingCeiling) DrawText("CEILING", 10, 310, 10, BLACK);
-            if (touchingWall) DrawText((ZSTR() << "WALL ON " << ((touchingWallDirection == 1) ? "RIGHT" : "LEFT")).str().c_str(), 10, 320, 10, BLACK);
-            DrawText((ZSTR() << "MOVE DELTA X: " << moveDelta.x << " Y: " << moveDelta.y).str().c_str(), 10, 330, 10, BLACK);
-
-            DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
-            DrawText((ZSTR() << "LEVEL: " << currentLevel << " / " << std::ssize(levelFiles)).str().c_str(), 10, 610, 10, RED);
+        // Debug HitBox
+#if 0
+        hitbox.SetSize(player.hitbox.GetSize());
+        if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_THUMB)) {
+            hitboxVelocity.x = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) * (gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_TRIGGER_1) ? 10.0f : 50.0f);
+            hitboxVelocity.y = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) * (gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_TRIGGER_1) ? 10.0f : 50.0f);
+        }
+        else {
+            hitbox.x += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X);
+            hitbox.y += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y);
         }
 
-        EndDrawing();
-        //----------------------------------------------------------------------------------
+        auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = level.collisionDetection(hitbox, hitboxVelocity);
+        auto hitBoxPosition = worldToScreen(hitbox.GetPosition());
+        auto hitBoxCenter = worldToScreen(hitbox.GetPosition() + hitbox.GetSize() / 2);
+        auto arrowPoint = hitBoxCenter + hitboxVelocity;
+        DrawRectangleLines(hitBoxPosition.x, hitBoxPosition.y, hitbox.GetWidth(), hitbox.GetHeight(), GREEN);
+        DrawLine(hitBoxCenter.x, hitBoxCenter.y, arrowPoint.x, arrowPoint.y, RED);
+
+        if (grounded) DrawText("GROUNDED", 10, 300, 10, BLACK);
+        if (touchingCeiling) DrawText("CEILING", 10, 310, 10, BLACK);
+        if (touchingWall) DrawText((ZSTR() << "WALL ON " << ((touchingWallDirection == 1) ? "RIGHT" : "LEFT")).str().c_str(), 10, 320, 10, BLACK);
+        DrawText((ZSTR() << "MOVE DELTA X: " << moveDelta.x << " Y: " << moveDelta.y).str().c_str(), 10, 330, 10, BLACK);
+#endif
+
+        DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
+        DrawText((ZSTR() << "LEVEL: " << currentLevel << " / " << std::ssize(levelFiles)).str().c_str(), 10, 610, 10, RED);
+    }
+
+    EndDrawing();
+    //----------------------------------------------------------------------------------
+}
+
+void Game::mainLoop()
+{
+    // Main game loop, detect window close button, ESC key or programmatic quit.
+    while (!window.ShouldClose() && !shouldQuit)
+    {
+        drawFrame();
     }
 }
 

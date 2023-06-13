@@ -15,7 +15,7 @@ std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > Animation::spr
     ZASSERT(animationLength > 0.0f);
 
     if (!loop && (animationTime >= animationLength))
-        return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins.back(), images.back(), nullptr };
+        return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins.back(), *images.back(), nullptr };
 
     while (animationTime >= animationLength)
         animationTime -= animationLength;
@@ -27,11 +27,11 @@ std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > Animation::spr
             break;
     }
 
-    return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins[i], images[i], sounds[i].has_value() ? &sounds[i].value() : nullptr };
+    return std::tuple< raylib::Vector2, raylib::Texture2D&, raylib::Sound* > { origins[i], *images[i], sounds[i] };
 }
 
 
-void Animation::load(const std::string& animFile) {
+void Animation::load(ResourceCache& resourceCache, const std::string& animFile) {
     images.clear();
     origins.clear();
     sounds.clear();
@@ -55,14 +55,14 @@ void Animation::load(const std::string& animFile) {
         }
 
         if (soundPath.empty())
-            sounds.emplace_back();
+            sounds.push_back(nullptr);
         else
-            sounds.emplace_back((basePath / soundPath).string());
+            sounds.emplace_back(resourceCache.getSound((basePath / soundPath).string()));
 
         if (imagePath.empty())
-            images.emplace_back();
+            images.push_back(resourceCache.getEmptyImage());
         else
-            images.emplace_back((basePath / imagePath).string());
+            images.push_back(resourceCache.getImage((basePath / imagePath).string()));
         origins.emplace_back(originX, originY);
         delays.push_back(delay);
     }
@@ -70,14 +70,14 @@ void Animation::load(const std::string& animFile) {
     animationLength = std::accumulate(delays.begin(), delays.end(), 0.0f);
 }
 
-void Animation::fromPicture(const std::string& imageFile, float length) {
+void Animation::fromPicture(ResourceCache& resourceCache, const std::string& imageFile, float length) {
     images.clear();
     origins.clear();
     sounds.clear();
     delays.clear();
 
-    images.emplace_back(imageFile);
-    sounds.emplace_back();
+    images.push_back(resourceCache.getImage(imageFile));
+    sounds.push_back(nullptr);
     origins.emplace_back(0.0f, 0.0f);
     delays.push_back(length);
     animationLength = length;

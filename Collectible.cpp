@@ -10,6 +10,15 @@
 
 #include <cmath>
 
+
+CollectiblePrefab::CollectiblePrefab(Game& game)
+    : game(game)
+    , collectSfx("Sounds/coin.wav")
+{
+    wiggleAnimation.load(game.resourceCache, "Graphics/Collectible/collectible-wiggle.json");
+    load();
+}
+
 void CollectiblePrefab::load() {
     const std::string playerFile = "Graphics/Collectible/collectible.json";
     auto jsonText = loadTextFile(playerFile);
