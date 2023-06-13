@@ -41,7 +41,7 @@ void Scene::load(const std::string& sceneFile, bool useFuthark, bool reloadHack)
             size_t start_pos = imPath.find(".png");
             imPath.replace(start_pos, 0, "-vr");
         }
-        animations[0].fromPicture(imPath);
+        animations[0].fromPicture(game.resourceCache, imPath);
         return;
     }
 
@@ -79,12 +79,12 @@ void Scene::load(const std::string& sceneFile, bool useFuthark, bool reloadHack)
                 size_t start_pos = imPath.find(".png");
                 imPath.replace(start_pos, 0, "-vr");
             }
-            animations.back().fromPicture(imPath);
+            animations.back().fromPicture(game.resourceCache, imPath);
         }
         else {
             auto animationPath = animation["animation"].get<std::string>();
             animations.emplace_back();
-            animations.back().load((basePath / animationPath).string());
+            animations.back().load(game.resourceCache, (basePath / animationPath).string());
             animations.back().loop = loop;
         }
     }

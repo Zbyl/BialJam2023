@@ -17,15 +17,16 @@
 
 
 void Level::load(const std::string& levelFile) {
-    exitDoorAnimation.load("Graphics/Door/door-open-close.json"); // Here so that we can iterate on it more easily, as it reloads.
+    exitDoorAnimation.load(game.resourceCache, "Graphics/Door/door-open-close.json"); // Here so that we can iterate on it more easily, as it reloads.
     exitDoorAnimation.loop = false;
-    futharkAnimation.load("Graphics/Viking/SpeechBubble.json"); // Here so that we can iterate on it more easily, as it reloads.
+    futharkAnimation.load(game.resourceCache, "Graphics/Viking/SpeechBubble.json"); // Here so that we can iterate on it more easily, as it reloads.
     futharkAnimation.loop = false;
 
     backgrounds.clear();
     foregrounds.clear();
     paralaxLayers.clear();
     paralaxScales.clear();
+    paralaxHaxxorOffsets.clear();
     levelData.clear();
     collectibles.clear();
 
@@ -59,7 +60,7 @@ void Level::load(const std::string& levelFile) {
         paralaxHaxxorOffsets.push_back(layer["paralaxHaxxorOffset"].get<float>());
 
         paralaxLayers.emplace_back((basePath / imagePath).string());
-        //paralaxLayers.back().SetWrap(TEXTURE_WRAP_REPEAT);
+        paralaxLayers.back().SetWrap(TEXTURE_WRAP_REPEAT); // For this to work textures must have power of 2 dimensions.
         paralaxScales.emplace_back(scaleX, scaleY);
     }
 
@@ -122,7 +123,7 @@ void Level::drawBackground() {
         auto pos = game.cameraPosition * paralaxScales[i];
         pos.y += paralaxHaxxorOffsets[i];
         //auto pos = raylib::Vector2::Zero();
-        paralaxLayers[i].Draw(game.worldToScreen(pos));
+        //paralaxLayers[i].Draw(game.worldToScreen(pos));
         //game.drawSprite(pos, paralaxLayers[i], raylib::Vector2::Zero(), false);
         //paralaxLayers[i].Draw(raylib::Rectangle {pos.x, pos.y, game.screenWidth * 1.0f, game.screenHeight * 1.0f}, raylib::Rectangle {0, 0, game.screenWidth * 1.0f, game.screenHeight * 1.0f});
         DrawTextureTiled(paralaxLayers[i], raylib::Rectangle {pos.x, pos.y, game.screenWidth * 1.0f, game.screenHeight * 1.0f}, raylib::Rectangle {0, 0, game.screenWidth * 1.0f, game.screenHeight * 1.0f});

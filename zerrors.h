@@ -10,6 +10,8 @@
 #include <sstream>
 #include <stdexcept>
 
+#include "raylib.h"
+
 /// Prevents compiler warnings about "unreferenced variable".
 #define ZUNUSED(x) (void)(x)
 
@@ -136,6 +138,8 @@ public:
 
     [[noreturn]] ~ThrowHelper() noexcept(false) {
         auto messageStr = message.str();
+        TraceLog(LOG_ERROR, "GenericException:");
+        TraceLog(LOG_ERROR, messageStr.c_str());
         exception << std::move(messageStr);
         throw exception;
     }

@@ -11,6 +11,22 @@
 #include <cmath>
 
 
+Player::Player(Game& game)
+    : game(game)
+    , jumpSfx("Sounds/541210__eminyildirim__combat-whoosh.wav")
+    , groundSfx("Sounds/step.wav")
+{
+    idleAnimation.load(game.resourceCache, "Graphics/Player/player-idle.json");
+    runAnimation.load(game.resourceCache, "Graphics/Player/player-run.json");
+    jumpUpAnimation.load(game.resourceCache, "Graphics/Player/player-jump-up.json");
+    jumpDownAnimation.load(game.resourceCache, "Graphics/Player/player-jump-down.json");
+    hurtAnimation.load(game.resourceCache, "Graphics/Player/player-hurt.json");
+    slideAnimation.load(game.resourceCache, "Graphics/Player/player-slide.json");
+    glideAnimation.load(game.resourceCache, "Graphics/Player/player-glide.json");
+    grabAnimation.load(game.resourceCache, "Graphics/Player/player-grab.json");
+    load();
+}
+
 void Player::update() {
     animTime += game.levelTimeDelta;
 

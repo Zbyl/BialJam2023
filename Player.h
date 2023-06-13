@@ -89,21 +89,7 @@ public:
     raylib::Sound groundSfx;
 
 public:
-    Player(Game& game)
-        : game(game)
-        , jumpSfx("Sounds/541210__eminyildirim__combat-whoosh.wav")
-        , groundSfx("Sounds/step.wav")
-    {
-        idleAnimation.load("Graphics/Player/player-idle.json");
-        runAnimation.load("Graphics/Player/player-run.json");
-        jumpUpAnimation.load("Graphics/Player/player-jump-up.json");
-        jumpDownAnimation.load("Graphics/Player/player-jump-down.json");
-        hurtAnimation.load("Graphics/Player/player-hurt.json");
-        slideAnimation.load("Graphics/Player/player-slide.json");
-        glideAnimation.load("Graphics/Player/player-glide.json");
-        grabAnimation.load("Graphics/Player/player-grab.json");
-        load();
-    }
+    Player(Game& game);
 
     void setInitialState(raylib::Vector2 initialPosition) {
         state = PlayerState::GROUNDED;

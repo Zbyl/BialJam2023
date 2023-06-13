@@ -29,6 +29,8 @@ add_executable(${APP_NAME}
     Scene.cpp
     Utilities.h
     Utilities.cpp
+    ResourceCache.h
+    ResourceCache.cpp
 
     zerrors.h
     zstr.h
@@ -46,14 +48,23 @@ if(MSVC)
     target_compile_definitions(${APP_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
 endif()
 
+if (EMSCRIPTEN)
+    target_compile_definitions(${APP_NAME} PUBLIC PLATFORM_WEB)
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fwasm-exceptions")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fwasm-exceptions")
+    # @note STACK_SIZE and TOTAL_MEMORY are overkill, but defaults were way to small!
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_GLFW=3 -s ASSERTIONS=1 -s WASM=1 -fwasm-exceptions -s STACK_SIZE=67108864 -s ALLOW_MEMORY_GROWTH=1 -s TOTAL_MEMORY=1073741824 -s FORCE_FILESYSTEM=1 --preload-file ${CMAKE_SOURCE_DIR}/Runtime@/ --shell-file ${CMAKE_SOURCE_DIR}/Build/emscripten-shell.html")
+    set(CMAKE_EXECUTABLE_SUFFIX ".html") # This line is used to set your executable to build with the emscripten html template so that you can directly open it.
+endif()
+
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PRIVATE nlohmann_json::nlohmann_json)
+
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
 target_include_directories(${APP_NAME} PRIVATE ${RAYLIB_INCLUDE_DIRS})
 
 target_include_directories(${APP_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/Build/raylib-cpp/include")
 target_include_directories(${APP_NAME} PRIVATE "${CMAKE_SOURCE_DIR}/Build/raygui/src")
-
-find_package(nlohmann_json CONFIG REQUIRED)
-target_link_libraries(${APP_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
 set_target_properties(${APP_NAME} PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/Runtime)
