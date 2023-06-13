@@ -89,7 +89,7 @@ void Menu::draw() {
         [=, this]() { game.shouldQuit = true; },
     });
 
-    int numItems = std::ssize(items);
+    auto numItems = static_cast<int>(std::ssize(items));
 
     auto currentYAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y);
 

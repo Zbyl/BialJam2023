@@ -191,7 +191,7 @@ void Game::mainLoop()
                 }
 
                 if (player.state == PlayerState::GROUNDED) {
-                    auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2)).value_or(TileType::EMPTY);
+                    auto playerTile = level.getTileWorld(player.position + raylib::Vector2(0, level.tileSize / 2.0f)).value_or(TileType::EMPTY);
                     if (playerTile == TileType::LAVA) {
                         endLevelByDeath = true;
                         level.setLevelEnding(true);
