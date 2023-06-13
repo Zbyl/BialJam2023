@@ -96,6 +96,12 @@ Official guide is in raylib README.md.
     - https://pixabay.com/pl/music/zbiorowy-inspiring-chill-152901/
 - Music from DL Sounds:
     - https://www.dl-sounds.com/royalty-free/oniku-loop2/
+- Sounds from Freesound.org and Pixabay (free to use):
+    - https://freesound.org/people/EminYILDIRIM/sounds/541210/
+    - https://freesound.org/people/Kodack/sounds/256860/
+    - https://pixabay.com/pl/sound-effects/mouse-6821/
+    - https://pixabay.com/pl/sound-effects/coins-31879/
+    - door-close, door-squeak, firework, step.
 
 
 # Todo
