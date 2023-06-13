@@ -11,12 +11,12 @@
 
 
 void Menu::update() {
-    if (!inMenu && game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_RIGHT)) {
+    if (!inMenu && game.isInputPressed(InputButton::MENU)) {
         show(true);
         return;
     }
 
-    if (inMenu && game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_RIGHT)) {
+    if (inMenu && game.isInputPressed(InputButton::MENU)) {
         show(false);
         return;
     }
@@ -99,15 +99,13 @@ void Menu::draw() {
 
     auto numItems = static_cast<int>(std::ssize(items));
 
-    auto currentYAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y);
-
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_UP) || (currentYAxisValue < -0.5f)) { // Left Up or D-Pad up
+    if (game.isInputDown(InputButton::MENU_UP)) {
         if (!yaxisBlocked)
             focusedItem = (focusedItem + numItems - 1) % numItems;
         yaxisBlocked = true;
     }
     else
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (currentYAxisValue > 0.5f)) { // Left Down or D-Pad down
+    if (game.isInputDown(InputButton::MENU_DOWN)) {
         if (!yaxisBlocked)
             focusedItem = (focusedItem + 1) % numItems;
         yaxisBlocked = true;
@@ -123,7 +121,7 @@ void Menu::draw() {
     }
 
     auto& [buttonFunc, actionFunc] = items[focusedItem];
-    if (game.gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+    if (game.isInputPressed(InputButton::MENU_ACTION)) { // A
         actionFunc();
     }
 }

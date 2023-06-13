@@ -48,30 +48,19 @@ void Player::update() {
 }
 
 void Player::step(float timeDelta) {
-    auto currentXAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_X);
-    auto currentYAxisValue = game.gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y);
-
-    int axisY = 0; // 1 is up, -1 is up.
     int axisX = 0; // 1 is right, -1 is left.
     auto buttonJump = false;
     auto buttonGrab = false;
     auto buttonGlide = false;
 
-    if (currentXAxisValue > 0.5f) {
+    if (game.isInputDown(InputButton::RIGHT)) {
         axisX += 1;
     }
-    if (currentXAxisValue < -0.5f) {
+    if (game.isInputDown(InputButton::LEFT)) {
         axisX -= 1;
     }
 
-    if (currentYAxisValue < -0.5f) {
-        axisY -= 1;
-    }
-    if (currentYAxisValue > 0.5f) {
-        axisY += 1;
-    }
-
-    if (game.gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+    if (game.isInputDown(InputButton::JUMP) && !game.waitUntilJumpNotPressed) { // A
         if (jumpButtonBlocked) {
             DrawText("JUMP BLOCKED", 10, 60, 10, BLACK);
         } else {

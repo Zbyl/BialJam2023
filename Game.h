@@ -10,6 +10,19 @@
 #include "raylib-cpp.hpp"
 
 
+enum class InputButton {
+    MENU,
+    MENU_UP,
+    MENU_DOWN,
+    MENU_ACTION,
+
+    LEFT,
+    RIGHT,
+    JUMP,
+    GRAB,
+    GLIDE,
+};
+
 enum class GameState {
     START_SCREEN,
     LEVEL,
@@ -65,6 +78,7 @@ public:
 
     bool debug = false;
     bool endLevelByDeath = false;
+    bool waitUntilJumpNotPressed = false;   ///< Don't count jump press that closes menu.
 
 public:
     Game()
@@ -100,4 +114,7 @@ public:
     void endLevel(bool died);
 
     void reloadScenes(bool useFuthark, bool reloadHack);
+
+    bool isInputDown(InputButton button) const;
+    bool isInputPressed(InputButton button) const;
 };

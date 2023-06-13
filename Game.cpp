@@ -3,6 +3,7 @@
 #include "Utilities.h"
 
 #include "zstr.h"
+#include "zerrors.h"
 
 
 raylib::Vector2 Game::worldToScreen(raylib::Vector2 worldPosition) const {
@@ -94,6 +95,7 @@ void Game::startLevel(int levelIndex) {
     level.startLevel();
     cameraPosition = player.position;
     cameraUpdate();
+    waitUntilJumpNotPressed = true;
 }
 
 void Game::endLevel(bool died) {
@@ -131,6 +133,9 @@ void Game::drawFrame()
     hitbox.SetPosition(player.position);
 #endif
 
+    if (!isInputDown(InputButton::JUMP)) { // A
+        waitUntilJumpNotPressed = false;
+    }
 
     if (debug) {
         if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_LEFT)) {
@@ -141,7 +146,7 @@ void Game::drawFrame()
         }
     }
 
-    if (IsKeyPressed(KEY_SPACE))
+    if (IsKeyPressed(KEY_O))
         debug = !debug;
 
     if (debug) {
@@ -215,7 +220,7 @@ void Game::drawFrame()
             levelEndScreen.update();
             drawHud(true);
             if (levelEndScreen.areAnimationsFinished()) {
-                if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+                if (isInputPressed(InputButton::MENU_ACTION)) { // A
                     startLevel(currentLevel + 1);
                     hackDisableMenuUpdate = true;
                 }
@@ -226,7 +231,7 @@ void Game::drawFrame()
         {
             deadScreen.update();
             if (deadScreen.areAnimationsFinished()) {
-                if (!menu.isInMenu() && gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+                if (!menu.isInMenu() && isInputPressed(InputButton::MENU_ACTION)) { // A
                     menu.setInMenu(true);
                     hackDisableMenuUpdate = true;
                 }
@@ -238,7 +243,7 @@ void Game::drawFrame()
             gameEndScreen.update();
             drawHud(true);
             if (gameEndScreen.areAnimationsFinished()) {
-                if (gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN)) { // A
+                if (isInputPressed(InputButton::MENU_ACTION)) { // A
                     restartGame();
                     hackDisableMenuUpdate = true;
                 }
@@ -393,4 +398,32 @@ void Game::reloadScenes(bool useFuthark, bool reloadHack) {
     levelEndScreen.load("Scenes/LevelEndScreen.json", useFuthark, reloadHack);
     gameEndScreen.load("Scenes/GameEndScreen.json", useFuthark, reloadHack);
     startScreen.startScene(reloadHack); // @hack
+}
+
+bool Game::isInputDown(InputButton button) const {
+    switch (button) {
+        case InputButton::MENU: return IsKeyDown(KEY_ESCAPE) || IsKeyDown(KEY_GRAVE) || gamepad.IsButtonDown(GAMEPAD_BUTTON_MIDDLE_RIGHT);
+        case InputButton::MENU_UP: return IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || gamepad.IsButtonDown(GAMEPAD_BUTTON_LEFT_FACE_UP) || (gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y) < -0.5f);
+        case InputButton::MENU_DOWN: return IsKeyDown(KEY_DOWN) || IsKeyDown(KEY_S) || gamepad.IsButtonDown(GAMEPAD_BUTTON_LEFT_FACE_DOWN) || (gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_Y) > 0.5f);
+        case InputButton::MENU_ACTION: return IsKeyDown(KEY_SPACE) || IsKeyDown(KEY_ENTER) || gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+
+        case InputButton::LEFT: return IsKeyDown(KEY_LEFT) || IsKeyDown(KEY_A) || gamepad.IsButtonDown(GAMEPAD_BUTTON_LEFT_FACE_LEFT) || (gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_X) < -0.5f);
+        case InputButton::RIGHT: return IsKeyDown(KEY_RIGHT) || IsKeyDown(KEY_D) || gamepad.IsButtonDown(GAMEPAD_BUTTON_LEFT_FACE_RIGHT) || (gamepad.GetAxisMovement(GAMEPAD_AXIS_LEFT_X) > 0.5f);
+        case InputButton::JUMP: return IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE) || gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+
+        default:
+            false;
+    }
+}
+
+bool Game::isInputPressed(InputButton button) const {
+    switch (button) {
+        case InputButton::MENU: return IsKeyPressed(KEY_GRAVE) || gamepad.IsButtonPressed(GAMEPAD_BUTTON_MIDDLE_RIGHT);
+        case InputButton::MENU_ACTION: return IsKeyPressed(KEY_SPACE) || IsKeyPressed(KEY_ENTER) || gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+
+        //case InputButton::JUMP: return IsKeyPressed(KEY_UP) || IsKeyPressed(KEY_W) || IsKeyPressed(KEY_SPACE) || gamepad.IsButtonPressed(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
+
+        default:
+            ZASSERT(false) << "Button not supported for isInputPressed: " << static_cast<int>(button);
+    }
 }
