@@ -33,10 +33,13 @@ void Player::update() {
     if (playerDead)
         return;
 
-    auto steps = 20.0f;
-    auto timeDelta = game.levelTimeDelta / steps;
-    for (int i = 0; i < steps; ++i) {
-        step(timeDelta);
+    auto timeDelta = game.levelTimeDelta;
+    auto maxSteps = 20;
+    for (int i = 0; i < maxSteps; ++i) {
+        auto timeEaten = step(timeDelta);
+        DrawText((ZSTR() << "Time delta: " << timeDelta * 1000 << "ms").str().c_str(), 10, 80 + i * 10, 10, BLACK);
+        DrawText((ZSTR() << "Time eaten: " << timeEaten * 1000 << "ms").str().c_str(), 250, 80 + i * 10, 10, BLACK);
+        timeDelta -= timeEaten;
     }
 
     DrawText((ZSTR() << "PLAYER STATE: " << to_string(state)).str().c_str(), 10, 10, 10, BLACK);
@@ -47,7 +50,7 @@ void Player::update() {
         DrawText("JUMP OWNED", 10, 70, 10, BLACK);
 }
 
-void Player::step(float timeDelta) {
+float Player::step(float timeDelta) {
     int axisX = 0; // 1 is right, -1 is left.
     auto buttonJump = false;
     auto buttonGrab = false;
@@ -83,7 +86,8 @@ void Player::step(float timeDelta) {
     // Check collisions and push back.
     auto [origin, image, sound] = runAnimation.spriteForTime(animTime); // @todo Using anim for hitbox is broken here.
     raylib::Rectangle currentHitbox = { position - origin + hitbox.GetPosition(), hitbox.GetSize() };
-    auto [grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta] = game.level.collisionDetection(currentHitbox, velocity);
+    auto [grounded, touchingCeiling, touchingWall, touchingWallDirection] = game.level.collisionQuery(currentHitbox);
+
     if (grounded || touchingCeiling) {
         velocity.y = 0.0f;
     }
@@ -218,7 +222,10 @@ void Player::step(float timeDelta) {
 
     if (velocity.x > 0) velocity.x = std::min(velocity.x, landMaxSpeed);
     if (velocity.x < 0) velocity.x = std::max(velocity.x, -landMaxSpeed);
-    position += velocity * timeDelta;
+
+    auto timeOfImpact = game.level.collisionDetection(currentHitbox, velocity * timeDelta);
+
+    position += velocity * timeDelta * timeOfImpact;
 
     switch (state) {
         case PlayerState::GROUNDED: currentAnimation = (std::fabs(velocity.x) > 0.1f) ? &runAnimation : &idleAnimation; break;
@@ -228,6 +235,8 @@ void Player::step(float timeDelta) {
         case PlayerState::GRABBING: currentAnimation = &glideAnimation; break;
         case PlayerState::GLIDING: currentAnimation = &grabAnimation; break;
     }
+
+    return timeDelta * timeOfImpact;
 }
 
 void Player::draw() {

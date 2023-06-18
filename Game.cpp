@@ -5,6 +5,13 @@
 #include "zstr.h"
 #include "zerrors.h"
 
+#include <box2d/box2d.h>
+#include <box2d/b2_time_of_impact.h>
+#include <PlayRho/PlayRho.hpp>
+#include <PlayRho/Collision/Distance.hpp>
+#include <PlayRho/Collision/Manifold.hpp>
+#include <PlayRho/Collision/WorldManifold.hpp>
+
 
 raylib::Vector2 Game::worldToScreen(raylib::Vector2 worldPosition) const {
     auto delta = worldPosition - cameraPosition;
@@ -126,6 +133,98 @@ void Game::endLevel(bool died) {
         totalCollected += collectedCount;
         totalAvailable += totalCount;
     }
+}
+
+class BoxWorld {
+public:
+    static const float worldToPhysicsRatio;    // 32 world pixels are 1 physics unit. Improves physics stability.
+
+public:
+    // Testing and debug stuff.
+    b2Transform playerTransform;
+    b2Transform groundTransform;
+    b2PolygonShape playerBox;
+    b2PolygonShape groundBox;
+
+    b2Vec2 chainPoints[4];
+    b2ChainShape chain;
+    b2EdgeShape edge;
+    b2Transform chainTransform;
+
+    playrho::d2::Transformation prPlayerTransform { { 0.0f, 0.9f } };
+    playrho::d2::Transformation prGroundTransform{ { 0.0f, -10.f } };
+    playrho::d2::Transformation prChainTransform{ { 0.0f, 0.f } };
+    playrho::d2::Shape prPlayerBox { playrho::d2::PolygonShapeConf{}.SetAsBox(1.0f, 1.0f) };
+    playrho::d2::Shape prGroundBox { playrho::d2::PolygonShapeConf{}.SetAsBox(40.0f, 10.0f) };
+    //playrho::d2::Shape prChain{ playrho::d2::ChainShapeConf{}.Add({-5.0f, 0.0f}).Add({-1.0f, 1.0f}).Add({1.0f, 1.0f}).Add({5.0f, 0.0f}).Add({-5.0f, 0.0f}) };
+    playrho::d2::Shape prChain{ playrho::d2::ChainShapeConf{}.Add({5.0f, 0.0f}).Add({1.0f, 1.0f}).Add({-1.0f, 1.0f}).Add({-5.0f, 0.0f}).Add({5.0f, 0.0f}) };
+};
+
+const float BoxWorld::worldToPhysicsRatio = 32.0f;    // 32 world pixels are 1 physics unit. Improves physics stability.
+
+void Game::initBoxWorld() {
+    boxWorld = std::make_shared<BoxWorld>();
+
+    boxWorld->playerTransform.Set({ 0.0f, 0.9f }, 0.0f);
+    boxWorld->groundTransform.Set({ 0.0f, -10.0f }, 0.0f);
+    boxWorld->playerBox.SetAsBox(1.0f, 1.0f);
+    boxWorld->groundBox.SetAsBox(40.0f, 10.0f);
+
+    if (false) {
+        boxWorld->chainPoints[0].Set(-5.0f, 0.0f);
+        boxWorld->chainPoints[1].Set(-1.0f, 1.0f);
+        boxWorld->chainPoints[2].Set(1.0f, 1.0f);
+        boxWorld->chainPoints[3].Set(5.0f, 0.0f);
+    } else {
+        boxWorld->chainPoints[0].Set(5.0f, 0.0f);
+        boxWorld->chainPoints[1].Set(1.0f, 1.0f);
+        boxWorld->chainPoints[2].Set(-1.0f, 1.0f);
+        boxWorld->chainPoints[3].Set(-5.0f, 0.0f);
+    }
+
+    boxWorld->chain.CreateLoop(boxWorld->chainPoints, 4);
+    boxWorld->chainTransform.Set({ 0.0f, 0.0f }, 0.0f);
+}
+
+auto Game::collideBoxes(raylib::Rectangle object, raylib::Vector2 velocity, raylib::Rectangle blocker) -> std::tuple<bool, float> {
+    auto rectToBox = [](raylib::Rectangle rect) -> std::tuple<Vector2, b2PolygonShape> {
+        b2PolygonShape box;
+        box.SetAsBox(rect.width / (2.0f * BoxWorld::worldToPhysicsRatio), rect.height / (2.0f * BoxWorld::worldToPhysicsRatio));
+        auto objectCenter = rect.GetPosition() + rect.GetSize() * raylib::Vector2(0.5f, 0.5f);
+        auto objectPhysCenter = objectCenter / raylib::Vector2(BoxWorld::worldToPhysicsRatio, BoxWorld::worldToPhysicsRatio);
+        return { objectPhysCenter, box };
+    };
+
+    auto [objectCenter, objectBox] = rectToBox(object);
+    auto [blockerCenter, blockerBox] = rectToBox(blocker);
+
+    b2Sweep sweepA;
+    sweepA.c0.Set(objectCenter.x, objectCenter.y);
+    sweepA.a0 = 0.0f;
+    sweepA.c.Set(objectCenter.x + velocity.x / BoxWorld::worldToPhysicsRatio, objectCenter.y + velocity.y / BoxWorld::worldToPhysicsRatio);
+    sweepA.a = sweepA.a0;
+    sweepA.localCenter.SetZero();
+
+    b2Sweep sweepB;
+    sweepB.c0.Set(blockerCenter.x, blockerCenter.y);
+    sweepB.a0 = 0.0f;
+    sweepB.c = sweepB.c0;
+    sweepB.a = 0.0f;
+    sweepB.localCenter.SetZero();
+
+    b2TOIInput input;
+    input.proxyA.Set(&objectBox, 0);
+    input.proxyB.Set(&blockerBox, 0);
+    input.sweepA = sweepA;
+    input.sweepB = sweepB;
+    input.tMax = 1.0f;
+
+    b2TOIOutput output;
+    b2TimeOfImpact(&output, &input);
+    if (output.state == b2TOIOutput::e_touching)
+        return { true, output.t };
+
+    return { false, 1.0f };
 }
 
 void Game::drawFrame()
@@ -258,9 +357,161 @@ void Game::drawFrame()
 
     if (debug) {
         // Debug Camera Window
-        auto cameraScreenPosition = worldToScreen(cameraPosition);
-        raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
-        DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
+        if (false) {
+            auto cameraScreenPosition = worldToScreen(cameraPosition);
+            raylib::Rectangle wndRect = { player.cameraWindow.x * screenWidth, player.cameraWindow.y * screenHeight, player.cameraWindow.width * screenWidth, player.cameraWindow.height * screenHeight };
+            DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
+        }
+
+        // Debug BoxWorld
+        if (true)
+        {
+
+            boxWorld->playerTransform.p.x += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) / 25.0f;
+            boxWorld->playerTransform.p.y -= gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) / 25.0f;
+
+            auto physToScreen = [this](b2Vec2 phys) -> raylib::Vector2 {
+                return { phys.x * BoxWorld::worldToPhysicsRatio + screenWidth / 2.0f, -phys.y * BoxWorld::worldToPhysicsRatio + screenHeight / 2.0f };
+            };
+
+            auto physSizeToScreen = [this](b2Vec2 physSize) -> raylib::Vector2 {
+                return { physSize.x * BoxWorld::worldToPhysicsRatio, physSize.y * BoxWorld::worldToPhysicsRatio };
+            };
+
+            raylib::Rectangle{ physToScreen(boxWorld->playerTransform.p) - physSizeToScreen({ 1.0f, 1.0f}), physSizeToScreen({ 2.0f, 2.0f }) }.DrawLines(RED);
+            raylib::Rectangle{ physToScreen(boxWorld->groundTransform.p) - physSizeToScreen({ 40.0f, 10.0f}), physSizeToScreen({ 80.0f, 20.0f }) }.DrawLines(BLUE);
+
+            for (int i = 0; i < 4; ++i) {
+                const auto& point0 = boxWorld->chainPoints[i];
+                const auto& point1 = boxWorld->chainPoints[(i + 1) % 4];
+                physToScreen(point0).DrawLine(physToScreen(point1), ORANGE);
+            }
+
+            bool overlap = b2TestOverlap(&boxWorld->groundBox, 0, &boxWorld->playerBox, 0, boxWorld->groundTransform, boxWorld->playerTransform);
+            DrawText(overlap ? "OVERLAP" : "NO OVERLAP", 10, 300, 10, BLACK);
+
+            {
+                b2Manifold manifold;
+                b2CollidePolygons(&manifold, &boxWorld->groundBox, boxWorld->groundTransform, &boxWorld->playerBox, boxWorld->playerTransform);
+                b2WorldManifold worldManifold;
+                worldManifold.Initialize(&manifold, boxWorld->groundTransform, boxWorld->groundBox.m_radius, boxWorld->playerTransform, boxWorld->playerBox.m_radius);
+
+                for (int32 i = 0; i < manifold.pointCount; ++i)
+                {
+                    b2Vec2 point = worldManifold.points[i];
+                    auto target = point + worldManifold.normal;
+                    physToScreen(point).DrawLine(physToScreen(target), YELLOW);
+                    physToScreen(target).DrawCircle(2.0f, BLUE);
+                }
+
+                b2Sweep sweepA;
+                sweepA.c0.Set(boxWorld->groundTransform.p.x, boxWorld->groundTransform.p.y);
+                sweepA.a0 = 0.0f;
+                sweepA.c = sweepA.c0;
+                sweepA.a = sweepA.a0;
+                sweepA.localCenter.SetZero();
+
+                b2Sweep sweepB;
+                sweepB.c0.Set(boxWorld->playerTransform.p.x, boxWorld->playerTransform.p.y);
+                sweepB.a0 = 0.0f;
+                sweepB.c.Set(0.0f, 0.0f);
+                sweepB.a = 0.0f;
+                sweepB.localCenter.SetZero();
+
+                b2TOIInput input;
+                input.proxyA.Set(&boxWorld->groundBox, 0);
+                input.proxyB.Set(&boxWorld->playerBox, 0);
+                input.sweepA = sweepA;
+                input.sweepB = sweepB;
+                input.tMax = 1.0f;
+
+                b2TOIOutput output;
+                b2TimeOfImpact(&output, &input);
+                DrawText((ZSTR() << "TOI: " << output.t << " state: " << output.state).str().c_str(), 10, 310, 10, BLACK);
+            }
+
+            for (int childIndex = 0; childIndex < boxWorld->chain.GetChildCount(); ++childIndex)
+            {
+                b2Manifold manifold;
+                boxWorld->chain.GetChildEdge(&boxWorld->edge, childIndex);
+                b2CollideEdgeAndPolygon(&manifold, &boxWorld->edge, boxWorld->chainTransform, &boxWorld->playerBox, boxWorld->playerTransform);
+                b2WorldManifold worldManifold;
+                worldManifold.Initialize(&manifold, boxWorld->chainTransform, boxWorld->edge.m_radius, boxWorld->playerTransform, boxWorld->playerBox.m_radius);
+
+                for (int32 i = 0; i < manifold.pointCount; ++i)
+                {
+                    b2Vec2 point = worldManifold.points[i];
+                    auto target = point + worldManifold.normal;
+                    physToScreen(point).DrawLine(physToScreen(target), YELLOW);
+                    physToScreen(target).DrawCircle(2.0f, BLUE);
+                }
+            }
+        }
+        if (false)
+        {
+            auto physToScreen = [this](b2Vec2 phys) -> raylib::Vector2 {
+                return { phys.x * BoxWorld::worldToPhysicsRatio + screenWidth / 2.0f, -phys.y * BoxWorld::worldToPhysicsRatio + screenHeight / 2.0f };
+            };
+
+            for (int i = 0; i < 4; ++i) {
+                const auto& point0 = boxWorld->chainPoints[i];
+                const auto& point1 = boxWorld->chainPoints[(i + 1) % 4];
+                physToScreen(point0).DrawLine(physToScreen(point1), ORANGE);
+            }
+        }
+
+        // Debug PlayRho
+        if (false)
+        {
+
+            boxWorld->prPlayerTransform.p[0] += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) / 25.0f;
+            boxWorld->prPlayerTransform.p[1] -= gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) / 25.0f;
+
+            auto physToScreen = [this](playrho::Vec2 phys) -> raylib::Vector2 {
+                return { phys[0] * BoxWorld::worldToPhysicsRatio + screenWidth / 2.0f, -phys[1] * BoxWorld::worldToPhysicsRatio + screenHeight / 2.0f };
+            };
+
+            auto physSizeToScreen = [this](playrho::Vec2 physSize) -> raylib::Vector2 {
+                return { physSize[0] * BoxWorld::worldToPhysicsRatio, physSize[1] * BoxWorld::worldToPhysicsRatio };
+            };
+
+            raylib::Rectangle{ physToScreen(boxWorld->prPlayerTransform.p) - physSizeToScreen({ 1.0f, 1.0f}), physSizeToScreen({ 2.0f, 2.0f }) }.DrawLines(RED);
+            raylib::Rectangle{ physToScreen(boxWorld->prGroundTransform.p) - physSizeToScreen({ 40.0f, 10.0f}), physSizeToScreen({ 80.0f, 20.0f }) }.DrawLines(BLUE);
+
+            {
+                auto overlap = TestOverlap(GetChild(boxWorld->prGroundBox, 0), boxWorld->prGroundTransform, GetChild(boxWorld->prPlayerBox, 0), boxWorld->prPlayerTransform);
+                DrawText((ZSTR() << "OVERLAP AREA " << overlap).str().c_str(), 10, 300, 10, BLACK);
+            }
+
+            {
+                auto overlap = TestOverlap(GetChild(boxWorld->prChain, 0), boxWorld->prChainTransform, GetChild(boxWorld->prPlayerBox, 0), boxWorld->prPlayerTransform);
+                DrawText((ZSTR() << "CHAIN OVERLAP AREA " << overlap).str().c_str(), 10, 310, 10, BLACK);
+            }
+
+            {
+                const auto manifold = CollideShapes(GetChild(boxWorld->prGroundBox, 0), boxWorld->prGroundTransform, GetChild(boxWorld->prPlayerBox, 0), boxWorld->prPlayerTransform);
+
+                auto worldManifold = playrho::d2::GetWorldManifold(manifold, boxWorld->prGroundTransform, GetVertexRadius(boxWorld->prGroundBox, 0), boxWorld->prPlayerTransform, GetVertexRadius(boxWorld->prPlayerBox, 0));
+                for (int32 i = 0; i < worldManifold.GetPointCount(); ++i)
+                {
+                    auto point = worldManifold.GetPoint(i);
+                    physToScreen(point).DrawLine(physToScreen(point + playrho::Length2 { worldManifold.GetNormal()[0], worldManifold.GetNormal()[1] }), YELLOW);
+                }
+            }
+            for (int childIndex = 0; childIndex < GetChildCount(boxWorld->prChain); ++childIndex)
+            {
+                const auto manifold = CollideShapes(GetChild(boxWorld->prChain, childIndex), boxWorld->prChainTransform, GetChild(boxWorld->prPlayerBox, 0), boxWorld->prPlayerTransform);
+
+                auto worldManifold = playrho::d2::GetWorldManifold(manifold, boxWorld->prChainTransform, GetVertexRadius(boxWorld->prChain, childIndex), boxWorld->prPlayerTransform, GetVertexRadius(boxWorld->prPlayerBox, 0));
+                for (int32 i = 0; i < worldManifold.GetPointCount(); ++i)
+                {
+                    auto point = worldManifold.GetPoint(i);
+                    auto target = point + playrho::Length2{ worldManifold.GetNormal()[0], worldManifold.GetNormal()[1] };
+                    physToScreen(point).DrawLine(physToScreen(target), GREEN);
+                    physToScreen(target).DrawCircle(2.0f, BLUE);
+                }
+            }
+        }
 
         // Debug HitBox
 #if 0
@@ -296,6 +547,8 @@ void Game::drawFrame()
 
 void Game::mainLoop()
 {
+    initBoxWorld();
+
     // Main game loop, detect window close button, ESC key or programmatic quit.
     while (!window.ShouldClose() && !shouldQuit)
     {
@@ -366,4 +619,7 @@ void Game::load(const std::string& levelFile) {
             episodes[episodeName].emplace_back((basePath / levelPath).string());
         }
     }
+}
+
+Game::~Game() {
 }

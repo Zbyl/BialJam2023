@@ -9,8 +9,8 @@
 
 #include "raylib-cpp.hpp"
 
+#include <tuple>
 #include <map>
-
 
 enum class InputButton {
     MENU,
@@ -43,6 +43,8 @@ inline std::string to_string(GameState state) {
     }
     ZASSERT(false);
 }
+
+class BoxWorld;
 
 class Game
 {
@@ -83,6 +85,8 @@ public:
     bool endLevelByDeath = false;
     bool waitUntilJumpNotPressed = false;   ///< Don't count jump press that closes menu.
 
+    std::shared_ptr<BoxWorld> boxWorld;
+
 public:
     Game()
         : window(screenWidth, screenHeight, "Kunek Bogus")
@@ -101,6 +105,8 @@ public:
         reloadScenes(menu.useFuthark, false);
         load("Levels/Levels.json");
     }
+
+    ~Game();
 
     void drawFrame();
     void mainLoop();
@@ -123,4 +129,10 @@ public:
     bool isInputPressed(InputButton button) const;
 
     void load(const std::string& levelFile);
+
+    void initBoxWorld();
+    /// Find collision between a moving object and a static blocker.
+    /// @returns (false, 1.0f) if there was no collision.
+    ///          (true, t) if there was a collision. t is time of collision, between 0.0 and 1.0 inclusive.
+    auto collideBoxes(raylib::Rectangle object, raylib::Vector2 velocity, raylib::Rectangle blocker) -> std::tuple<bool, float>;
 };

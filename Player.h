@@ -116,7 +116,8 @@ public:
     void setPlayerDead(bool dead);
 
     void update();
-    void step(float timeDelta);
+    /// Returns time that was actually eaten by the step.
+    float step(float timeDelta);
     void draw();
     void load();
 };

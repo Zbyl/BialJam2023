@@ -60,6 +60,12 @@ endif()
 find_package(nlohmann_json CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE nlohmann_json::nlohmann_json)
 
+find_package(box2d CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PRIVATE box2d::box2d)
+
+find_package(PlayRho CONFIG REQUIRED)
+target_link_libraries(${APP_NAME} PRIVATE PlayRho::PlayRho)
+
 find_package(raylib CONFIG REQUIRED)
 target_link_libraries(${APP_NAME} PRIVATE raylib)
 target_include_directories(${APP_NAME} PRIVATE ${RAYLIB_INCLUDE_DIRS})

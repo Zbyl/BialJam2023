@@ -88,7 +88,8 @@ public:
     std::optional<TileType> getTileRaw(int x, int y) const;
     std::optional<TileType> getTileWorld(raylib::Vector2 worldPosition) const;
 
-    std::tuple<bool, bool, bool, int, raylib::Vector2> collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity);
+    float collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity);
+    std::tuple<bool, bool, bool, int> collisionQuery(raylib::Rectangle hitBox);
 
     /// @returns [ collectedCount, totalCount ]
     std::tuple<int, int> getCollectibleStats() const;

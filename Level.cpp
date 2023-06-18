@@ -187,8 +187,8 @@ std::optional<TileType> Level::getTileWorld(raylib::Vector2 worldPosition) const
 /// Performs collision detection and response.
 /// @note assumes hitBoxes are smaller than a tile.
 /// @note Implementation is weak, and also assumes that colliders don't touch with just corners.
-/// returns (grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta)
-std::tuple<bool, bool, bool, int, raylib::Vector2> Level::collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity) {
+/// returns timeOfImpact
+float Level::collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity) {
     ZASSERT(hitBox.GetWidth() < tileSize);
     ZASSERT(hitBox.GetHeight() < tileSize);
 
@@ -199,146 +199,111 @@ std::tuple<bool, bool, bool, int, raylib::Vector2> Level::collisionDetection(ray
     if (hitBox.GetPosition().y < 0)
         hitBoxTileY -= 1;
 
-    TileType blocks[4] = {
-        getTileRaw(hitBoxTileX + 0, hitBoxTileY + 0).value_or(TileType::WALL),
-        getTileRaw(hitBoxTileX + 1, hitBoxTileY + 0).value_or(TileType::WALL),
-        getTileRaw(hitBoxTileX + 0, hitBoxTileY + 1).value_or(TileType::WALL),
-        getTileRaw(hitBoxTileX + 1, hitBoxTileY + 1).value_or(TileType::WALL),
+    /// Return time of impact when colliding with given tile, using given velocity.
+    /// @param x    Relative tile position, -1..1.
+    /// @param y    Relative tile position, -1..1.
+    /// @return Time of impact: 0.0..1.0
+    auto boxToi = [this, hitBox, hitBoxTileX, hitBoxTileY](int x, int y, raylib::Vector2 velocity) -> float {
+        auto tile = getTileRaw(hitBoxTileX + x, hitBoxTileY + y).value_or(TileType::WALL);
+        if (!isCollider(tile))
+            return 1.0f;
+
+        raylib::Rectangle blocker = {
+            (hitBoxTileX + x) * tileSize * 1.0f,
+            (hitBoxTileY + y) * tileSize * 1.0f,
+            tileSize * 1.0f,
+            tileSize * 1.0f,
+        };
+        auto [collision, toi] = game.collideBoxes(hitBox, velocity, blocker);
+        return toi;
     };
 
-    auto numColliders = 0;
-    for (auto tile : blocks) {
-        if (isCollider(tile)) numColliders++;
-    }
-    if (numColliders == 0)
-        return { false, false, false, -1, raylib::Vector2::Zero() };
-
-    auto topLeft = isCollider(blocks[0]);
-    auto topRight = isCollider(blocks[1]);
-    auto bottomLeft = isCollider(blocks[2]);
-    auto bottomRight = isCollider(blocks[3]);
-
-    auto topLeftFix = topLeft;
-    auto topRightFix = topRight;
-    auto bottomLeftFix = bottomLeft;
-    auto bottomRightFix = bottomRight;
-
-    auto hitBoxIsRight = (static_cast<int>(hitBox.GetX()) % tileSize) + hitBox.GetWidth() > tileSize;
-    auto hitBoxIsDown = (static_cast<int>(hitBox.GetY()) % tileSize) + hitBox.GetHeight() > tileSize;
-
-    enum class Direction {
-        UP = 0,
-        DOWN = 1,
-        LEFT = 2,
-        RIGHT = 3,
-    };
-
-    std::vector<Direction> moves;
-
-    if (topLeft && topRight) {
-        moves.push_back(Direction::DOWN);
-        topLeftFix = false;
-        topRightFix = false;
-    }
-
-    if (bottomLeft && bottomRight) {
-        if (hitBoxIsDown)
-            moves.push_back(Direction::UP);
-        bottomLeftFix = false;
-        bottomRightFix = false;
-    }
-
-    if (topLeft && bottomLeft) {
-        moves.push_back(Direction::RIGHT);
-        topLeftFix = false;
-        bottomLeftFix = false;
-    }
-
-    if (topRight && bottomRight) {
-        if (hitBoxIsRight)
-            moves.push_back(Direction::LEFT);
-        topRightFix = false;
-        bottomRightFix = false;
-    }
-
-    if (topLeftFix) {
-        if (velocity.x >= 0)
-            moves.push_back(Direction::DOWN);
-        else
-            moves.push_back(Direction::RIGHT);
-    }
-
-    if (topRightFix) {
-        if (velocity.x <= 0)
-            moves.push_back(Direction::DOWN);
-        else
-            if (hitBoxIsRight)
-                moves.push_back(Direction::LEFT);
-    }
-
-    if (bottomLeftFix) {
-        if (velocity.x >= 0)
-            if (hitBoxIsDown)
-                moves.push_back(Direction::UP);
-            else
-                moves.push_back(Direction::RIGHT);
-    }
-
-    if (bottomRightFix) {
-        if (velocity.x <= 0)
-            if (hitBoxIsDown)
-                moves.push_back(Direction::UP);
-            else
-                if (hitBoxIsRight)
-                    moves.push_back(Direction::LEFT);
-    }
-
-    bool grounded = false;
-    bool touchingWall = false;
-    int touchingWallDirection = 0; // 1 right, -1 left, 0 not touching. If both sides, player direction is used.
-    bool touchingCeiling = false;
-    raylib::Vector2 moveDelta { 0.0f, 0.0f };
-
-    for (auto direction : moves) {
-        if (direction == Direction::DOWN) {
-            touchingCeiling = true;
-            moveDelta.y = tileSize - std::get<1>(divide(hitBox.GetY(), tileSize));
-            continue;
+    auto timeOfImpact = 1.0f;
+    for (int i = -1; i <= 1; ++i)
+        for (int j = -1; j <= 1; ++j) {
+            if ((i == 0) && (j == 0))
+                continue;
+            auto toi = boxToi(j, i, velocity);
+            timeOfImpact = std::min(timeOfImpact, toi);
         }
-        if (direction == Direction::UP) {
+
+    return timeOfImpact;
+}
+
+/// Performs collision detection and response.
+/// @note assumes hitBoxes are smaller than a tile.
+/// @note Implementation is weak, and also assumes that colliders don't touch with just corners.
+/// returns (grounded, touchingCeiling, touchingWall, touchingWallDirection)
+std::tuple<bool, bool, bool, int> Level::collisionQuery(raylib::Rectangle hitBox) {
+    ZASSERT(hitBox.GetWidth() < tileSize);
+    ZASSERT(hitBox.GetHeight() < tileSize);
+
+    auto hitBoxTileX = static_cast<int>(hitBox.GetPosition().x) / tileSize;
+    auto hitBoxTileY = static_cast<int>(hitBox.GetPosition().y) / tileSize;
+    if (hitBox.GetPosition().x < 0)
+        hitBoxTileX -= 1;
+    if (hitBox.GetPosition().y < 0)
+        hitBoxTileY -= 1;
+
+    /// Return time of impact when colliding with given tile, using given velocity.
+    /// @param x    Relative tile position, -1..1.
+    /// @param y    Relative tile position, -1..1.
+    /// @return Time of impact: 0.0..1.0
+    auto boxToi = [this, hitBox, hitBoxTileX, hitBoxTileY](int x, int y, raylib::Vector2 velocity) -> float {
+        auto tile = getTileRaw(hitBoxTileX + x, hitBoxTileY + y).value_or(TileType::WALL);
+        if (!isCollider(tile))
+            return 1.0f;
+
+        raylib::Rectangle blocker = {
+            (hitBoxTileX + x) * tileSize * 1.0f,
+            (hitBoxTileY + y) * tileSize * 1.0f,
+            tileSize * 1.0f,
+            tileSize * 1.0f,
+        };
+        auto [collision, toi] = game.collideBoxes(hitBox, velocity, blocker);
+        return toi;
+    };
+
+    auto grounded = false, touchingCeiling = false, touchingWall = false;
+    auto touchingWallDirection = -1;
+
+    const float epsilon = 0.01;
+
+    // Floor
+    for (int j = -1; j <= 1; ++j) {
+        auto toi = boxToi(j, 1, raylib::Vector2(0.0f, 1.0f));
+        if (toi < epsilon) {
             grounded = true;
-            moveDelta.y = -std::get<1>(divide(hitBox.GetY() + hitBox.GetHeight(), tileSize));
-            continue;
         }
-        if (direction == Direction::RIGHT) {
+    }
+
+    // Ceiling
+    for (int j = -1; j <= 1; ++j) {
+        auto toi = boxToi(j, -1, raylib::Vector2(0.0f, -1.0f));
+        if (toi < epsilon) {
+            touchingCeiling = true;
+        }
+    }
+
+    // Left wall
+    for (int j = -1; j <= 1; ++j) {
+        auto toi = boxToi(-1, j, raylib::Vector2(-1.0f, 0.0f));
+        if (toi < epsilon) {
             touchingWall = true;
             touchingWallDirection = -1;
-            moveDelta.x = tileSize - std::get<1>(divide(hitBox.GetX(), tileSize));
-            continue;
         }
-        if (direction == Direction::LEFT) {
+    }
+
+    // Right wall
+    for (int j = -1; j <= 1; ++j) {
+        auto toi = boxToi(1, j, raylib::Vector2(1.0f, 0.0f));
+        if (toi < epsilon) {
             touchingWall = true;
             touchingWallDirection = 1;
-            moveDelta.x = -std::get<1>(divide(hitBox.GetX(), tileSize));
-            continue;
         }
     }
 
-    auto groundLevel = hitBoxTileY * tileSize;
-    auto groundCenter = (hitBoxTileX + 1) * tileSize;
-    auto movedHitBoxBottom = (hitBox.GetPosition() + hitBox.GetSize() + moveDelta).y;
-    auto movedHitBoxLeft = (hitBox.GetPosition() + moveDelta).x;
-    auto movedHitBoxRight = (hitBox.GetPosition() + hitBox.GetSize() + moveDelta).x;
-    if (movedHitBoxBottom + 1 >= groundLevel) {
-        if (bottomLeft && (movedHitBoxLeft < groundCenter)) {
-            grounded = true;
-        }
-        if (bottomRight && (movedHitBoxRight >= groundCenter)) {
-            grounded = true;
-        }
-    }
-
-    return { grounded, touchingCeiling, touchingWall, touchingWallDirection, moveDelta };
+    return { grounded, touchingCeiling, touchingWall, touchingWallDirection };
 }
 
 std::tuple<int, int> Level::getCollectibleStats() const {
