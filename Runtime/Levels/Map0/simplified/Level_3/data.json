@@ -1,0 +1,226 @@
+{
+	"identifier": "Level_3",
+	"uniqueIdentifer": "9201a350-ed50-11ed-bd70-dbcdbe8d4df7",
+	"x": 0,
+	"y": 4320,
+	"width": 2560,
+	"height": 1440,
+	"bgColor": "#00FCFF",
+	"neighbourLevels": [
+		{
+			"levelIid": "dee972d0-ed50-11ed-aae4-e1252efbe060",
+			"dir": "n"
+		},
+		{
+			"levelIid": "982d6160-ed50-11ed-bd70-8117ce5049c3",
+			"dir": "s"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"IntGrid.png",
+		"Detail.png",
+		"Foreground.png"
+	],
+	"entities": {
+		"Collectible": [
+			{
+				"id": "Collectible",
+				"iid": "a3cd45f0-ed50-11ed-bd70-29fbe63aac61",
+				"layer": "Entities",
+				"x": 919,
+				"y": 353,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "a592eac0-ed50-11ed-bd70-93fd20af393c",
+				"layer": "Entities",
+				"x": 699,
+				"y": 541,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "a64e99a0-ed50-11ed-bd70-27d6af5d1142",
+				"layer": "Entities",
+				"x": 761,
+				"y": 538,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "ab95c410-ed50-11ed-bd70-7ba5cafa66cb",
+				"layer": "Entities",
+				"x": 1734,
+				"y": 583,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "b64de810-ed50-11ed-bd70-995247ebe2d3",
+				"layer": "Entities",
+				"x": 292,
+				"y": 811,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "b6d71540-ed50-11ed-bd70-a38dd2504094",
+				"layer": "Entities",
+				"x": 336,
+				"y": 838,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "b8319c30-ed50-11ed-bd70-5376fe055a2e",
+				"layer": "Entities",
+				"x": 777,
+				"y": 749,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "b8c74c80-ed50-11ed-bd70-0dae0f2dbced",
+				"layer": "Entities",
+				"x": 709,
+				"y": 741,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "ba1f1450-ed50-11ed-bd70-977882475a25",
+				"layer": "Entities",
+				"x": 975,
+				"y": 608,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "baba1bd0-ed50-11ed-bd70-4fa29f45f7aa",
+				"layer": "Entities",
+				"x": 1059,
+				"y": 618,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "c198d630-ed50-11ed-bd70-45d0285e4165",
+				"layer": "Entities",
+				"x": 1355,
+				"y": 587,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			},
+			{
+				"id": "Collectible",
+				"iid": "c25ce980-ed50-11ed-bd70-79f85099e5f9",
+				"layer": "Entities",
+				"x": 1446,
+				"y": 611,
+				"width": 16,
+				"height": 16,
+				"color": 16705377,
+				"customFields" : {}
+			}
+		],
+		"Futhark": [
+			{
+				"id": "Futhark",
+				"iid": "e95012b0-ed50-11ed-bd70-fb0f8f3ded01",
+				"layer": "Entities",
+				"x": 2500,
+				"y": 640,
+				"width": 56,
+				"height": 50,
+				"color": 16711680,
+				"customFields" : {}
+			}
+		],
+		"ExitDoor": [
+			{
+				"id": "ExitDoor",
+				"iid": "f175cc00-ed50-11ed-bd70-ab86b41eba56",
+				"layer": "Entities",
+				"x": 2487,
+				"y": 775,
+				"width": 22,
+				"height": 48,
+				"color": 12470831,
+				"customFields" : {}
+			}
+		],
+		"Exit": [
+			{
+				"id": "Exit",
+				"iid": "fadb0a30-ed50-11ed-bd70-cd305bbaddee",
+				"layer": "Entities",
+				"x": 2483,
+				"y": 746,
+				"width": 30,
+				"height": 50,
+				"color": 39387,
+				"customFields" : {}
+			}
+		],
+		"FurharkTrigger": [
+			{
+				"id": "FurharkTrigger",
+				"iid": "0350df50-ed50-11ed-bd70-e1ba7a74e40c",
+				"layer": "Entities",
+				"x": 2108,
+				"y": 552,
+				"width": 450,
+				"height": 350,
+				"color": 2943221,
+				"customFields" : {}
+			}
+		],
+		"PlayerStart": [
+			{
+				"id": "PlayerStart",
+				"iid": "08513cc0-ed50-11ed-bd70-2d7a9646c945",
+				"layer": "Entities",
+				"x": 148,
+				"y": 841,
+				"width": 16,
+				"height": 16,
+				"color": 6539085,
+				"customFields" : {}
+			}
+		]
+	}
+}

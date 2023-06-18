@@ -61,7 +61,8 @@ public:
     bool shouldQuit = false;
     Menu menu;
 
-    std::vector<std::string> levelFiles { "Levels/Level0.json", "Levels/Level1.json", "Levels/Level2.json" };
+    std::vector<std::string> levelFiles{ "Levels/Level8.json", "Levels/Level7.json", "Levels/Level6.json", "Levels/Level5.json", "Levels/Level4.json", "Levels/Level3.json", "Levels/Level0.json", "Levels/Level1.json", "Levels/Level2.json" };
+    //std::vector<std::string> levelFiles{ "Levels/Level0.json", "Levels/Level1.json", "Levels/Level2.json" };
     int currentLevel = 0;       ///< Current or last level played.
     int totalCollected = 0;     ///< Number of collected collectibles.
     int totalAvailable = 0;     ///< Number of collectibles that were available.
