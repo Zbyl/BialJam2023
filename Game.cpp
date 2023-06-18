@@ -333,7 +333,7 @@ bool Game::isInputDown(InputButton button) const {
         case InputButton::JUMP: return IsKeyDown(KEY_UP) || IsKeyDown(KEY_W) || IsKeyDown(KEY_SPACE) || gamepad.IsButtonDown(GAMEPAD_BUTTON_RIGHT_FACE_DOWN);
 
         default:
-            false;
+            return false;
     }
 }
 
