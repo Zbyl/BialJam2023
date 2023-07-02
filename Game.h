@@ -9,6 +9,8 @@
 
 #include "raylib-cpp.hpp"
 
+#include <map>
+
 
 enum class InputButton {
     MENU,
@@ -61,7 +63,8 @@ public:
     bool shouldQuit = false;
     Menu menu;
 
-    std::vector<std::string> levelFiles { "Levels/Level0.json", "Levels/Level1.json", "Levels/Level2.json" };
+    std::map<std::string, std::vector<std::string>> episodes;
+    std::string currentEpisode; ///< Current or last episode played.
     int currentLevel = 0;       ///< Current or last level played.
     int totalCollected = 0;     ///< Number of collected collectibles.
     int totalAvailable = 0;     ///< Number of collectibles that were available.
@@ -96,6 +99,7 @@ public:
     {
         hudCollectible.forHud = true;
         reloadScenes(menu.useFuthark, false);
+        load("Levels/Levels.json");
     }
 
     void drawFrame();
@@ -117,4 +121,6 @@ public:
 
     bool isInputDown(InputButton button) const;
     bool isInputPressed(InputButton button) const;
+
+    void load(const std::string& levelFile);
 };

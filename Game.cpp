@@ -77,8 +77,10 @@ void Game::restartGame() {
     menu.setInMenu(true);
     gameState = GameState::START_SCREEN;
     totalCollected = 0;
+    totalAvailable = 0;
     startScreen.startScene();
     currentLevel = 0;
+    currentEpisode.clear();
 }
 
 void Game::restartLevel() {
@@ -90,8 +92,9 @@ void Game::startLevel(int levelIndex) {
     menu.setMenuRectangle({ 0.0f, 200.0f, static_cast<float>(screenWidth), static_cast<float>(screenHeight) });
     gameState = GameState::LEVEL;
     currentLevel = levelIndex;
-    ZASSERT(currentLevel < std::ssize(levelFiles));
-    level.load(levelFiles[currentLevel]);
+    ZASSERT(episodes.contains(currentEpisode));
+    ZASSERT(currentLevel < std::ssize(episodes.at(currentEpisode)));
+    level.load(episodes.at(currentEpisode)[currentLevel]);
     level.startLevel();
     cameraPosition = player.position;
     cameraUpdate();
@@ -110,7 +113,7 @@ void Game::endLevel(bool died) {
     }
     else
     {
-        if (currentLevel < std::ssize(levelFiles) - 1) {
+        if (currentLevel < std::ssize(episodes.at(currentEpisode)) - 1) {
             gameState = GameState::LEVEL_SUCCESS;
             levelEndScreen.startScene();
         }
@@ -285,7 +288,7 @@ void Game::drawFrame()
 #endif
 
         DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
-        DrawText((ZSTR() << "LEVEL: " << currentLevel << " / " << std::ssize(levelFiles)).str().c_str(), 10, 610, 10, RED);
+        DrawText((ZSTR() << "LEVEL: " << currentEpisode << " " << currentLevel << " / " << (episodes.contains(currentEpisode) ? std::ssize(episodes.at(currentEpisode)) : -1)).str().c_str(), 10, 610, 10, RED);
     }
 
     EndDrawing();
@@ -346,5 +349,22 @@ bool Game::isInputPressed(InputButton button) const {
 
         default:
             ZASSERT(false) << "Button not supported for isInputPressed: " << static_cast<int>(button);
+    }
+}
+
+void Game::load(const std::string& levelFile) {
+    episodes.clear();
+
+    // Custom data
+    auto jsonText = loadTextFile(levelFile);
+    auto json = nlohmann::json::parse(jsonText);
+    auto basePath = std::filesystem::path(levelFile).parent_path();
+
+    for (auto episode : json["episodes"]) {
+        auto episodeName = episode["name"].get<std::string>();
+        for (auto levelFile : episode["levels"]) {
+            auto levelPath = levelFile.get<std::string>();
+            episodes[episodeName].emplace_back((basePath / levelPath).string());
+        }
     }
 }
