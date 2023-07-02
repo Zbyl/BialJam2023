@@ -3,22 +3,22 @@
 		{
 			"name": "Kunek Bogus",
 			"levels": [
-				"Level0.json",
-				"Level1.json",
-				"Level2.json"
+				"Level0-0.json",
+				"Level0-1.json",
+				"Level0-2.json"
 			]
 		},
 		{
 			"name": "Swirofretka",
 			"levels": [
-				"Level5.json"
+				"Level1-2.json"
 			]
 		},
 		{
 			"name": "Pieczona Lasica",
 			"levels": [
-				"Level4.json",
-				"Level3.json"
+				"Level1-2.json",
+				"Level1-1.json"
 			]
 		}
 	]
