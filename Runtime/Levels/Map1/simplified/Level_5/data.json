@@ -1,0 +1,92 @@
+{
+	"identifier": "Level_5",
+	"uniqueIdentifer": "2058c210-1460-11ee-a8b8-0903fc158c84",
+	"x": 16,
+	"y": 11520,
+	"width": 2544,
+	"height": 1440,
+	"bgColor": "#00FCFF",
+	"neighbourLevels": [
+		{
+			"levelIid": "a245d3e0-1460-11ee-8cd4-c5c75d771627",
+			"dir": "n"
+		},
+		{
+			"levelIid": "98acba30-1460-11ee-a8b8-2149b517f20b",
+			"dir": "s"
+		}
+	],
+	"customFields" : {},
+	"layers": [
+		"IntGrid.png",
+		"Detail.png",
+		"Foreground.png"
+	],
+	"entities": {
+		"PlayerStart": [
+			{
+				"id": "PlayerStart",
+				"iid": "0a207ce0-1460-11ee-a8b8-c1b2cbbd54cd",
+				"layer": "Entities",
+				"x": 128,
+				"y": 815,
+				"width": 16,
+				"height": 16,
+				"color": 6539085,
+				"customFields" : {}
+			}
+		],
+		"ExitDoor": [
+			{
+				"id": "ExitDoor",
+				"iid": "37cb0250-1460-11ee-a8b8-772ad35d50a6",
+				"layer": "Entities",
+				"x": 2423,
+				"y": 967,
+				"width": 22,
+				"height": 48,
+				"color": 12470831,
+				"customFields" : {}
+			}
+		],
+		"Exit": [
+			{
+				"id": "Exit",
+				"iid": "3ebd6bc0-1460-11ee-a8b8-e7cb25f77e12",
+				"layer": "Entities",
+				"x": 2419,
+				"y": 938,
+				"width": 30,
+				"height": 50,
+				"color": 39387,
+				"customFields" : {}
+			}
+		],
+		"Futhark": [
+			{
+				"id": "Futhark",
+				"iid": "4b0b23e0-1460-11ee-a8b8-2d72b05d2515",
+				"layer": "Entities",
+				"x": 2475,
+				"y": 60,
+				"width": 56,
+				"height": 50,
+				"color": 16711680,
+				"customFields" : {}
+			}
+		],
+		"FurharkTrigger": [
+			{
+				"id": "FurharkTrigger",
+				"iid": "60a784f0-1460-11ee-a8b8-41310d3e9f1e",
+				"layer": "Entities",
+				"x": 1589,
+				"y": 22,
+				"width": 450,
+				"height": 350,
+				"color": 2943221,
+				"customFields" : {}
+			}
+		]
+	}
+}

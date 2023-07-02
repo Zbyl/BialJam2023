@@ -11,14 +11,18 @@
 		{
 			"name": "Swirofretka",
 			"levels": [
+				"Level1-5.json",
+				"Level1-4.json",
 				"Level1-2.json"
 			]
 		},
 		{
 			"name": "Pieczona Lasica",
 			"levels": [
-				"Level1-2.json",
-				"Level1-1.json"
+				"Level1-6.json",
+				"Level1-1.json",
+				"Level1-0.json",
+				"Level1-3.json"
 			]
 		}
 	]
