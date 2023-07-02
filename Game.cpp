@@ -223,7 +223,7 @@ void Game::drawFrame()
             levelEndScreen.update();
             drawHud(true);
             if (levelEndScreen.areAnimationsFinished()) {
-                if (isInputPressed(InputButton::MENU_ACTION)) { // A
+                if (!menu.isInMenu() && isInputPressed(InputButton::MENU_ACTION)) { // A
                     startLevel(currentLevel + 1);
                     hackDisableMenuUpdate = true;
                 }
