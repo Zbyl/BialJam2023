@@ -222,17 +222,6 @@
 			},
 			{
 				"id": "Collectible",
-				"iid": "c3d6f600-1460-11ee-a8b8-13845f36fef8",
-				"layer": "Entities",
-				"x": 1149,
-				"y": 365,
-				"width": 16,
-				"height": 16,
-				"color": 16705377,
-				"customFields" : {}
-			},
-			{
-				"id": "Collectible",
 				"iid": "f949ab70-1460-11ee-a8b8-6df86fd2e639",
 				"layer": "Entities",
 				"x": 991,
