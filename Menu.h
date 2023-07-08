@@ -11,6 +11,7 @@ class Menu {
 private:
     Game& game;
     bool inMenu = false;
+    bool episodeSelect = false;
 
     int focusedItem = 0;
     bool yaxisBlocked = false;  // We block Y axis after input to avoid registering continuous presses.
@@ -27,13 +28,14 @@ public:
     Menu(Game& game) : game(game), futharkFont("Graphics/Fonts/futhark.png") {}
 
     bool isInMenu() const { return inMenu; }
-    void setInMenu(bool inMenu) { this->inMenu = inMenu; focusedItem = 0; }
+    void setInMenu(bool inMenu) { this->inMenu = inMenu; focusedItem = 0; episodeSelect = false; }
     void setMenuRectangle(raylib::Rectangle menuRectangle) { this->menuRectangle = menuRectangle; }
 
     void show(bool doShow)
     {
         inMenu = doShow;
         focusedItem = 0;
+        episodeSelect = false;
         yaxisBlocked = false;
     }
 

@@ -1,0 +1,21 @@
+{
+    "tileSize": 16,
+    "extraLevelEndDelay": 1.0,
+    "ldtkMap": "Map1/simplified/Level_4",
+    "music": "../Music/forest-lullaby-110624.mp3",
+    "musicVolume": 0.5,
+    "backgrounds": [ "Map1/simplified/Level_4/IntGrid.png", "Map1/simplified/Level_4/Detail.png" ],
+    "foregrounds": [ "Map1/simplified/Level_4/Foreground.png" ],
+    "paralaxLayers": [
+        {
+            "image": "../Graphics/Backgrounds/sea.png",
+            "scale": { "x":  0.5, "y":  0.05 },
+            "paralaxHaxxorOffset": 234
+        },
+        {
+            "image": "../Graphics/Backgrounds/trees.png",
+            "scale": { "x":  0.8, "y":  0.2 },
+            "paralaxHaxxorOffset": 84
+        }
+    ]
+}
