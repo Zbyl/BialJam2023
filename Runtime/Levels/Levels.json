@@ -10,13 +10,13 @@
 				"Level0-4.json",
 				"Level0-5.json",
 				"Level0-6.json",
-				"Level0-7.json",
-				"Level0-8.json"
+				"Level0-7.json"
 			]
 		},
 		{
 			"name": "Swirofretka",
 			"levels": [
+				"Level0-8.json",
 				"Level1-5.json",
 				"Level1-4.json",
 				"Level1-2.json"

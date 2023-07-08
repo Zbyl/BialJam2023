@@ -1,4 +1,5 @@
 {
+    "description": "Leona: Dwóch wikingów",
     "tileSize": 16,
     "extraLevelEndDelay": 1.0,
     "ldtkMap": "Map0/simplified/Level_7",
