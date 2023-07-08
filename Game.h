@@ -63,8 +63,8 @@ public:
     bool shouldQuit = false;
     Menu menu;
 
-    std::map<std::string, std::vector<std::string>> episodes;
-    std::string currentEpisode; ///< Current or last episode played.
+    std::map<std::u32string, std::vector<std::string>> episodes;
+    std::u32string currentEpisode; ///< Current or last episode played.
     int currentLevel = 0;       ///< Current or last level played.
     int totalCollected = 0;     ///< Number of collected collectibles.
     int totalAvailable = 0;     ///< Number of collectibles that were available.

@@ -45,7 +45,7 @@ if(MSVC)
     target_link_options(${APP_NAME} PUBLIC "/INCREMENTAL")
 
     # Remove useless warnings.
-    target_compile_definitions(${APP_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+    target_compile_definitions(${APP_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS _SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING)
 endif()
 
 if (EMSCRIPTEN)

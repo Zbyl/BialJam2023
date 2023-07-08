@@ -35,6 +35,7 @@ void Level::load(const std::string& levelFile) {
     auto json = nlohmann::json::parse(jsonText);
     auto basePath = std::filesystem::path(levelFile).parent_path();
 
+    levelDescription = loadUnicodeStringFromJson(json, "description");
     tileSize = json["tileSize"].get<int>();
     extraLevelEndDelay = json["extraLevelEndDelay"].get<float>();
 

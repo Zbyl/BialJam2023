@@ -1,4 +1,4 @@
-
+﻿
 #include "Utilities.h"
 
 #include "zerrors.h"
@@ -6,6 +6,7 @@
 
 #include <fstream>
 #include <cmath>
+#include <codecvt>
 
 
 std::string loadTextFile(const std::string& fileName) {
@@ -132,11 +133,63 @@ void DrawTextureTiled(Texture2D texture, Rectangle source, Rectangle dest, Vecto
     }
 }
 
-std::string toUpperEx(bool upper, std::string text) {
-    if (!upper) return text;
+std::map<char32_t, char32_t> dropDiacriticsMap = {
+    {U'ź', U'z'},
+    {U'ń', U'n'},
+    {U'ż', U'z'},
+    {U'ó', U'o'},
+    {U'ł', U'l'},
+    {U'ś', U's'},
+    {U'ć', U'c'},
+    {U'ę', U'e'},
+    {U'ą', U'a'},
 
-    for (auto& c : text)
-        c = std::toupper(c);
-    return text;
+    {U'Ź', U'Z'},
+    {U'Ń', U'N'},
+    {U'Ż', U'Z'},
+    {U'Ó', U'O'},
+    {U'Ł', U'L'},
+    {U'Ś', U'S'},
+    {U'Ć', U'C'},
+    {U'Ę', U'E'},
+    {U'Ą', U'A'},
+};
+
+std::string textForFont(bool allowLowercase, bool allowDiacritics, const std::u32string& text) {
+    std::u32string newText;
+    for (auto c32 : text) {
+        char32_t c = c32;
+        if (dropDiacriticsMap.contains(c)) {
+            if (!allowDiacritics)
+                c = dropDiacriticsMap[c];
+        }
+        else
+        if ((c < 32) || (c > 127)) {
+            c = U'?';
+        }
+        if (!allowLowercase)
+            c = std::toupper(c);
+        newText.push_back(c);
+    }
+
+    std::wstring_convert<std::codecvt<char32_t, char, std::mbstate_t>, char32_t> utfConverter;
+    auto outText = utfConverter.to_bytes(newText);
+    return outText;
 }
 
+std::vector<int> loadCharset(const std::string& fileName) {
+    char* text = LoadFileText(fileName.c_str());
+    int codepointsCount = 0;
+    int* codepoints = LoadCodepoints(text, &codepointsCount);
+    std::vector<int> charset(codepoints, codepoints + codepointsCount);
+    UnloadFileText(text);
+    UnloadCodepoints(codepoints);
+    return charset;
+}
+
+std::u32string loadUnicodeStringFromJson(const nlohmann::json& json, const std::string& key) {
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utfConverter;
+    auto textRaw = json[key].get<std::string>();
+    auto text = utfConverter.from_bytes(textRaw);
+    return text;
+}

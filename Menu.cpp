@@ -1,4 +1,4 @@
-#include "Menu.h"
+﻿#include "Menu.h"
 
 #include "Game.h"
 #include "Utilities.h"
@@ -9,6 +9,15 @@
 
 #include "raygui.h"
 
+#include "zstr.h"
+
+
+Menu::Menu(Game& game)
+    : game(game)
+    , charset(loadCharset("Graphics/Fonts/charset.txt"))
+    , menuFont("Graphics/Fonts/zekton-free.rg-regular.otf", 16, charset.data(), std::ssize(charset))
+    , futharkFont("Graphics/Fonts/futhark.png")
+{}
 
 void Menu::update() {
     if (!inMenu && game.isInputPressed(InputButton::MENU)) {
@@ -30,13 +39,19 @@ void Menu::draw() {
     if (useFuthark) {
         GuiSetFont(futharkFont);
     } else {
-        GuiSetFont(GetFontDefault());
+        GuiSetFont(menuFont);
+    }
+
+    if (game.gameState != GameState::START_SCREEN) {
+        auto numEpisodes = game.episodes.contains(game.currentEpisode) ? std::ssize(game.episodes.at(game.currentEpisode)) : -1;
+        auto& curFont = (useFuthark ? futharkFont : menuFont);
+        curFont.DrawText((ZSTR() << "LEVEL: " << textForFont(!useFuthark, !useFuthark, game.currentEpisode) << ": " << textForFont(!useFuthark, !useFuthark, game.level.levelDescription) << " " << game.currentLevel << " / " << numEpisodes).str().c_str(), {10, 10}, curFont.baseSize, 1.0f, BLUE);
     }
 
 #if defined(PLATFORM_WEB)
-    bool webBuild = true;
+    const bool webBuild = true;
 #else
-    bool webBuild = false;
+    const bool webBuild = false;
 #endif
 
     float buttonWidth = 140;
@@ -52,58 +67,58 @@ void Menu::draw() {
     if (episodeSelect) {
         for (const auto& [episodeName, levelFiles] : game.episodes) {
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, toUpperEx(useFuthark, episodeName).c_str()); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, textForFont(!useFuthark, !useFuthark, episodeName).c_str()); },
                 [=, this]() { game.currentEpisode = episodeName; game.startLevel(0); },
             });
         }
         addItem({
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_UNDO_FILL, toUpperEx(useFuthark, "Back").c_str())); },
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_UNDO_FILL, textForFont(!useFuthark, !useFuthark, U"Wstecz").c_str())); },
             [=, this]() { episodeSelect = false; focusedItem = 0; },
         });
     }
     else {
         if (game.gameState == GameState::START_SCREEN)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_PLAYER_PLAY, toUpperEx(useFuthark, "Start game").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_PLAYER_PLAY, textForFont(!useFuthark, !useFuthark, U"Nowa gra").c_str())); },
                 [=, this]() { game.load("Levels/Levels.json"); episodeSelect = true; focusedItem = 0; },
             });
         if (game.gameState == GameState::LEVEL)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_UNDO_FILL, toUpperEx(useFuthark, "Back to game").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_UNDO_FILL, textForFont(!useFuthark, !useFuthark, U"Wróć do gry").c_str())); },
                 [=, this]() { show(false); },
             });
         if ((game.gameState == GameState::LEVEL) || (game.gameState == GameState::LEVEL_DIED))
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_REDO_FILL, toUpperEx(useFuthark, "Restart level").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_REDO_FILL, textForFont(!useFuthark, !useFuthark, U"Restart poziomu").c_str())); },
                 [=, this]() { game.restartLevel(); },
             });
         if (game.gameState == GameState::LEVEL)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_PLAYER_NEXT, toUpperEx(useFuthark, "Next level").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_PLAYER_NEXT, textForFont(!useFuthark, !useFuthark, U"Zakończ poziom").c_str())); },
                 [=, this]() { game.endLevel(false); },
             });
         if (game.gameState != GameState::START_SCREEN)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_REREDO_FILL, toUpperEx(useFuthark, "Restart game").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_REREDO_FILL, textForFont(!useFuthark, !useFuthark, U"Restart gry").c_str())); },
                 [=, this]() { game.restartGame(); },
             });
         if (false)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, toUpperEx(useFuthark, "Save").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_FILE_SAVE, textForFont(!useFuthark, !useFuthark, U"Zapisz").c_str())); },
                 [=, this]() {},
             });
         if (false)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_TARGET_MOVE_FILL, toUpperEx(useFuthark, "Show controls").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_TARGET_MOVE_FILL, textForFont(!useFuthark, !useFuthark, U"Sterowanie").c_str())); },
                 [=, this]() {},
             });
         if (!webBuild)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_CURSOR_SCALE, toUpperEx(useFuthark, game.window.IsFullscreen() ? "Exit full screen" : "Full screen").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_CURSOR_SCALE, textForFont(!useFuthark, !useFuthark, game.window.IsFullscreen() ? U"W oknie" : U"Pełny ekran").c_str())); },
                 [=, this]() { game.window.ToggleFullscreen(); },
             });
         addItem({
-            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_GEAR_BIG, toUpperEx(useFuthark, useFuthark ? "To English" : "To Futhark").c_str())); },
+            [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_GEAR_BIG, textForFont(!useFuthark, !useFuthark, useFuthark ? U"Polish" : U"Futhark").c_str())); },
             [=, this]() {
                 useFuthark = !useFuthark;
                 game.reloadScenes(useFuthark, true);
@@ -111,7 +126,7 @@ void Menu::draw() {
             });
         if (!webBuild)
             addItem({
-                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_EXIT, toUpperEx(useFuthark, "Quit").c_str())); },
+                [=, this]() { GuiButton(raylib::Rectangle { buttonX, yPosition, buttonWidth, 30 }, GuiIconText(ICON_EXIT, textForFont(!useFuthark, !useFuthark, U"Wyjdź z gry").c_str())); },
                 [=, this]() { game.shouldQuit = true; },
             });
     }

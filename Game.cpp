@@ -33,14 +33,14 @@ void Game::drawHud(bool withTotals) {
         hudCollectible.position = raylib::Vector2{ startX, startY };
         hudCollectible.update();
         hudFont.DrawText((ZSTR() << collectedCount << " / " << totalCount).str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
-        futFont.DrawText(toUpperEx(menu.useFuthark, "w poziomie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        futFont.DrawText(textForFont(!menu.useFuthark, false, U"w poziomie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
 
         startX = 930.0f;
         startY = 250.0f;
         hudCollectible.position = raylib::Vector2{ startX, startY };
         hudCollectible.update();
         hudFont.DrawText((ZSTR() << totalCollected << " / " << totalAvailable).str(), raylib::Vector2{ startX + 30.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
-        futFont.DrawText(toUpperEx(menu.useFuthark, "w sumie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
+        futFont.DrawText(textForFont(!menu.useFuthark, false, U"w sumie"), raylib::Vector2{ startX + 140.0f, startY - 20.0f }, 40.0f, 1.0f, GOLD);
     }
 }
 
@@ -288,7 +288,6 @@ void Game::drawFrame()
 #endif
 
         DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
-        DrawText((ZSTR() << "LEVEL: " << currentEpisode << " " << currentLevel << " / " << (episodes.contains(currentEpisode) ? std::ssize(episodes.at(currentEpisode)) : -1)).str().c_str(), 10, 610, 10, RED);
     }
 
     EndDrawing();
@@ -361,7 +360,7 @@ void Game::load(const std::string& levelFile) {
     auto basePath = std::filesystem::path(levelFile).parent_path();
 
     for (auto episode : json["episodes"]) {
-        auto episodeName = episode["name"].get<std::string>();
+        auto episodeName = loadUnicodeStringFromJson(episode, "name");
         for (auto levelFile : episode["levels"]) {
             auto levelPath = levelFile.get<std::string>();
             episodes[episodeName].emplace_back((basePath / levelPath).string());

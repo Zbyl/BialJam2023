@@ -42,6 +42,7 @@ public:
     int tileSize = 16;      ///< Tiles are squares of this size.
     int levelWidth;         ///< Width of the level in pixels. Multiples of tileSize.
     int levelHeight;        ///< Width of the level in pixels. Multiples of tileSize.
+    std::u32string levelDescription;            ///< Desription of the level.
 
 private:
     std::vector<raylib::Texture2D> backgrounds; ///< Level images drawn before entities.
