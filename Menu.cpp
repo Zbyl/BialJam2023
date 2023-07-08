@@ -45,7 +45,7 @@ void Menu::draw() {
     if (game.gameState != GameState::START_SCREEN) {
         auto numEpisodes = game.episodes.contains(game.currentEpisode) ? std::ssize(game.episodes.at(game.currentEpisode)) : -1;
         auto& curFont = (useFuthark ? futharkFont : menuFont);
-        curFont.DrawText((ZSTR() << "LEVEL: " << textForFont(!useFuthark, !useFuthark, game.currentEpisode) << ": " << textForFont(!useFuthark, !useFuthark, game.level.levelDescription) << " " << game.currentLevel << " / " << numEpisodes).str().c_str(), {10, 10}, curFont.baseSize, 1.0f, BLUE);
+        curFont.DrawText((ZSTR() << "LEVEL: " << textForFont(!useFuthark, !useFuthark, game.currentEpisode) << ": " << textForFont(!useFuthark, !useFuthark, game.level.levelDescription) << " " << game.currentLevel + 1 << " / " << numEpisodes).str().c_str(), {10, 10}, curFont.baseSize, 1.0f, BLUE);
     }
 
 #if defined(PLATFORM_WEB)

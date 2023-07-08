@@ -3,7 +3,7 @@
     "tileSize": 16,
     "extraLevelEndDelay": 1.0,
     "ldtkMap": "Map1/simplified/Level_5",
-    "music": "../Music/forest-lullaby-110624.mp3",
+    "music": "../Music/Oniku Loop2.wav",
     "musicVolume": 0.5,
     "backgrounds": [ "Map1/simplified/Level_5/IntGrid.png", "Map1/simplified/Level_5/Detail.png" ],
     "foregrounds": [ "Map1/simplified/Level_5/Foreground.png" ],
