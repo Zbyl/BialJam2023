@@ -1,7 +1,7 @@
 {
 	"episodes": [
 		{
-			"name": "Kunek Bogus",
+			"name": "Kunek Boguś",
 			"levels": [
 				"Level0-0.json",
 				"Level0-1.json",
@@ -11,10 +11,11 @@
 				"Level0-5.json",
 				"Level0-6.json",
 				"Level0-7.json"
+				"Level2-0.json",
 			]
 		},
 		{
-			"name": "Swirofretka",
+			"name": "Świrofretka",
 			"levels": [
 				"Level0-8.json",
 				"Level1-5.json",
@@ -23,7 +24,7 @@
 			]
 		},
 		{
-			"name": "Pieczona Lasica",
+			"name": "Pieczona Łasica",
 			"levels": [
 				"Level1-6.json",
 				"Level1-1.json",
