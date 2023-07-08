@@ -185,49 +185,74 @@ std::optional<TileType> Level::getTileWorld(raylib::Vector2 worldPosition) const
 }
 
 /// Performs collision detection and response.
-/// @note assumes hitBoxes are smaller than a tile.
-/// @note Implementation is weak, and also assumes that colliders don't touch with just corners.
 /// returns timeOfImpact
 float Level::collisionDetection(raylib::Rectangle hitBox, raylib::Vector2 velocity) {
     ZASSERT(hitBox.GetWidth() < tileSize);
     ZASSERT(hitBox.GetHeight() < tileSize);
 
-    auto hitBoxTileX = static_cast<int>(hitBox.GetPosition().x) / tileSize;
-    auto hitBoxTileY = static_cast<int>(hitBox.GetPosition().y) / tileSize;
-    if (hitBox.GetPosition().x < 0)
-        hitBoxTileX -= 1;
-    if (hitBox.GetPosition().y < 0)
-        hitBoxTileY -= 1;
+    // To avoid tunnelling through cells we do steps at most tileSize long.
+    auto speed = velocity.Length();
+    auto stepSpeed = tileSize * 0.25f; // If we jump a full tile we overlap, but why???
+    auto [result, remainder] = divide(speed, stepSpeed);
+    auto numSteps = result + 1;
 
-    /// Return time of impact when colliding with given tile, using given velocity.
-    /// @param x    Relative tile position, -1..1.
-    /// @param y    Relative tile position, -1..1.
-    /// @return Time of impact: 0.0..1.0
-    auto boxToi = [this, hitBox, hitBoxTileX, hitBoxTileY](int x, int y, raylib::Vector2 velocity) -> float {
-        auto tile = getTileRaw(hitBoxTileX + x, hitBoxTileY + y).value_or(TileType::WALL);
-        if (!isCollider(tile))
-            return 1.0f;
-
-        raylib::Rectangle blocker = {
-            (hitBoxTileX + x) * tileSize * 1.0f,
-            (hitBoxTileY + y) * tileSize * 1.0f,
-            tileSize * 1.0f,
-            tileSize * 1.0f,
-        };
-        auto [collision, toi] = game.collideBoxes(hitBox, velocity, blocker);
-        return toi;
-    };
-
-    auto timeOfImpact = 1.0f;
-    for (int i = -1; i <= 1; ++i)
-        for (int j = -1; j <= 1; ++j) {
-            if ((i == 0) && (j == 0))
-                continue;
-            auto toi = boxToi(j, i, velocity);
-            timeOfImpact = std::min(timeOfImpact, toi);
+    auto stepVelocity = velocity * (stepSpeed / speed);
+    for (int step = 0; step < numSteps; ++step) {
+        if (step == numSteps - 1) {
+            stepVelocity = velocity * (remainder / speed);
         }
 
-    return timeOfImpact;
+        auto hitBoxTileX = static_cast<int>(hitBox.GetPosition().x) / tileSize;
+        auto hitBoxTileY = static_cast<int>(hitBox.GetPosition().y) / tileSize;
+        if (hitBox.GetPosition().x < 0)
+            hitBoxTileX -= 1;
+        if (hitBox.GetPosition().y < 0)
+            hitBoxTileY -= 1;
+
+        /// Return time of impact when colliding with given tile, using given velocity.
+        /// @param x    Relative tile position, -1..1.
+        /// @param y    Relative tile position, -1..1.
+        /// @return Time of impact: 0.0..1.0
+        auto boxToi = [this, hitBox, hitBoxTileX, hitBoxTileY](int x, int y, raylib::Vector2 velocity) -> float {
+            auto tile = getTileRaw(hitBoxTileX + x, hitBoxTileY + y).value_or(TileType::WALL);
+            if (!isCollider(tile))
+                return 1.0f;
+
+            raylib::Rectangle blocker = {
+                (hitBoxTileX + x) * tileSize * 1.0f,
+                (hitBoxTileY + y) * tileSize * 1.0f,
+                tileSize * 1.0f,
+                tileSize * 1.0f,
+            };
+            game.drawScreenRect(hitBox, YELLOW, 20);
+            auto [collision, toi] = game.collideBoxes(hitBox, velocity, blocker);
+            if (toi == 1.0f)
+                game.drawScreenRect(blocker, SKYBLUE, 1);
+            else
+                game.drawScreenRect(blocker, WHITE, 10);
+            return toi;
+        };
+
+        auto timeOfImpact = 1.0f;
+        for (int i = -1; i <= 1; ++i)
+            for (int j = -1; j <= 1; ++j) {
+                if ((i == 0) && (j == 0))
+                    continue;
+
+                // We don't want to collide with
+                bool ignoreCollider = false;
+
+                auto toi = boxToi(j, i, stepVelocity);
+                timeOfImpact = std::min(timeOfImpact, toi);
+            }
+
+        if (timeOfImpact < 1.0f)
+            return (step * 1.0f + timeOfImpact) / numSteps;
+
+        hitBox.SetPosition(hitBox.GetPosition() + stepVelocity);
+    }
+
+    return 1.0f;
 }
 
 /// Performs collision detection and response.

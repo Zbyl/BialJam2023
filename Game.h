@@ -87,6 +87,8 @@ public:
 
     std::shared_ptr<BoxWorld> boxWorld;
 
+    std::vector< std::tuple<raylib::Rectangle, raylib::Color, int> > screenRects;
+
 public:
     Game()
         : window(screenWidth, screenHeight, "Kunek Bogus")
@@ -135,4 +137,7 @@ public:
     /// @returns (false, 1.0f) if there was no collision.
     ///          (true, t) if there was a collision. t is time of collision, between 0.0 and 1.0 inclusive.
     auto collideBoxes(raylib::Rectangle object, raylib::Vector2 velocity, raylib::Rectangle blocker) -> std::tuple<bool, float>;
+
+    void drawScreenRect(raylib::Rectangle rect, Color color, int layer = 0);
+    void flushScreenRects();
 };

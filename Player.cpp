@@ -86,6 +86,7 @@ float Player::step(float timeDelta) {
     // Check collisions and push back.
     auto [origin, image, sound] = runAnimation.spriteForTime(animTime); // @todo Using anim for hitbox is broken here.
     raylib::Rectangle currentHitbox = { position - origin + hitbox.GetPosition(), hitbox.GetSize() };
+    game.drawScreenRect(currentHitbox, RED);
     auto [grounded, touchingCeiling, touchingWall, touchingWallDirection] = game.level.collisionQuery(currentHitbox);
 
     if (grounded || touchingCeiling) {
@@ -225,7 +226,10 @@ float Player::step(float timeDelta) {
 
     auto timeOfImpact = game.level.collisionDetection(currentHitbox, velocity * timeDelta);
 
-    position += velocity * timeDelta * timeOfImpact;
+    position += velocity * timeDelta * timeOfImpact; // @todo Fix velocity to cut time.
+
+    raylib::Rectangle currentHitbox2 = { position - origin + hitbox.GetPosition(), hitbox.GetSize() };
+    game.drawScreenRect(currentHitbox2, BLUE);
 
     switch (state) {
         case PlayerState::GROUNDED: currentAnimation = (std::fabs(velocity.x) > 0.1f) ? &runAnimation : &idleAnimation; break;

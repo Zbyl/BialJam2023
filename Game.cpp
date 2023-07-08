@@ -221,6 +221,8 @@ auto Game::collideBoxes(raylib::Rectangle object, raylib::Vector2 velocity, rayl
 
     b2TOIOutput output;
     b2TimeOfImpact(&output, &input);
+    if (output.state == b2TOIOutput::e_overlapped)
+        return { true, 0.0f };
     if (output.state == b2TOIOutput::e_touching)
         return { true, output.t };
 
@@ -363,8 +365,39 @@ void Game::drawFrame()
             DrawRectangleLines(wndRect.x, wndRect.y, wndRect.width, wndRect.height, BLUE);
         }
 
-        // Debug BoxWorld
+        // Debug Box collisions.
         if (true)
+        {
+            raylib::Rectangle blocker;
+            blocker.SetPosition(cameraPosition);
+            blocker.SetSize(32.0f, 32.0f);
+
+            raylib::Rectangle player;
+            player.SetPosition(cameraPosition + raylib::Vector2(40.0f, 0.0f));
+            player.SetSize(32.0f, 32.0f);
+
+            raylib::Vector2 velocity;
+            velocity.x = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) * 20.0f;
+            velocity.y = gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_Y) * 20.0f;
+
+            auto [collision, timeOfImpact] = collideBoxes(player, velocity, blocker);
+
+            raylib::Rectangle destPlayer = player;
+            destPlayer.SetPosition(player.GetPosition() + velocity);
+
+            raylib::Rectangle newPlayer = player;
+            newPlayer.SetPosition(player.GetPosition() + velocity * timeOfImpact);
+
+            drawScreenRect(blocker, BLUE);
+            drawScreenRect(player, GREEN);
+            drawScreenRect(destPlayer, YELLOW);
+            drawScreenRect(newPlayer, RED);
+
+            DrawText((ZSTR() << "Collision: " << collision << " TOI: " << timeOfImpact).str().c_str(), 10, 300, 10, BLACK);
+        }
+
+        // Debug BoxWorld
+        if (false)
         {
 
             boxWorld->playerTransform.p.x += gamepad.GetAxisMovement(GAMEPAD_AXIS_RIGHT_X) / 25.0f;
@@ -539,10 +572,13 @@ void Game::drawFrame()
 #endif
 
         DrawText((ZSTR() << "GAME STATE: " << to_string(gameState)).str().c_str(), 10, 600, 10, RED);
+
+        flushScreenRects();
     }
 
     EndDrawing();
     //----------------------------------------------------------------------------------
+    shouldQuit = shouldQuit;    // Point for a berakpoint.
 }
 
 void Game::mainLoop()
@@ -622,4 +658,18 @@ void Game::load(const std::string& levelFile) {
 }
 
 Game::~Game() {
+}
+
+void Game::drawScreenRect(raylib::Rectangle rect, Color color, int layer) {
+    screenRects.emplace_back(rect, color, layer);
+}
+
+void Game::flushScreenRects() {
+    std::sort(screenRects.begin(), screenRects.end(), [](const auto& tup0, const auto& tup1) { return std::get<2>(tup0) < std::get<2>(tup1); });
+
+    for (auto& [screenRect, color, layer] : screenRects) {
+        auto position = worldToScreen(screenRect.GetPosition());
+        DrawRectangleLines(position.x, position.y, screenRect.width, screenRect.height, color);
+    }
+    screenRects.clear();
 }
