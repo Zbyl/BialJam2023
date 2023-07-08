@@ -143,10 +143,8 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
 
       #controls {
         display: inline-block;
-        float: right;
         vertical-align: top;
         margin-top: 15px;
-        margin-right: 20px;
       }
 
       #output {
@@ -180,15 +178,16 @@ jwE50AGjLCVuS8Yt4H7OgZLKK5EKOsLviEWJSL/+0uMi7gLUSBseYwqEbXvSHCec1CJvZPyHCmYQffaB
   <body>
     <div id="header">
         <a id="logo" href="https://www.raylib.com"></a>
-        <div id="sound-message">Click inside the game area to enable sound!</div>
-
-        <div class="spinner" id='spinner'></div>
-        <div class="emscripten" id="status">Downloading...</div>
 
         <span id='controls'>
           <span><input type="button" value="🖵 FULLSCREEN" onclick="Module.requestFullscreen(false, false)"></span>
           <span><input type="button" id="btn-audio" value="🔇 SUSPEND" onclick="toggleAudio()"></span>
         </span>
+
+        <div id="sound-message">Click inside the game area to enable sound!</div>
+
+        <div class="spinner" id='spinner'></div>
+        <div class="emscripten" id="status">Downloading...</div>
 
         <div class="emscripten">
           <progress value="0" max="100" id="progress" hidden=1></progress>

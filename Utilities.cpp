@@ -172,7 +172,7 @@ std::string textForFont(bool allowLowercase, bool allowDiacritics, const std::u3
         newText.push_back(c);
     }
 
-    std::wstring_convert<std::codecvt<char32_t, char, std::mbstate_t>, char32_t> utfConverter;
+    std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> utfConverter;
     auto outText = utfConverter.to_bytes(newText);
     return outText;
 }
